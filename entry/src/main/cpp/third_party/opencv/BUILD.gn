@@ -1,0 +1,679 @@
+# Copyright 2023 Unionman Technology Co., Ltd.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+import("//build/ohos.gni")
+import("//build/config/clang/clang.gni")
+import("//build/ohos/ndk/ndk.gni")
+
+config("opencv_config") {
+  include_dirs = [ "include/opencv4" ]
+  cflags = [
+    "-Wno-incompatible-pointer-types",
+    "-Werror",
+    "-Wimplicit-function-declaration",
+    "-Wno-error=unused-variable",
+  ]
+  cflags = []
+}
+
+ohos_prebuilt_static_library("libopencv_aruco") {
+  if (target_cpu == "arm64") {
+    source = "lib64/libopencv_aruco.a"
+  } else {
+    source = "lib/libopencv_aruco.a"
+  }
+  public_configs = [ ":opencv_config" ]
+  part_name = "rockchip_products"
+
+}
+
+ohos_prebuilt_static_library("libopencv_barcode") {
+  if (target_cpu == "arm64") {
+    source = "lib64/libopencv_barcode.a"
+  } else {
+    source = "lib/libopencv_barcode.a"
+  }
+  public_configs = [ ":opencv_config" ]
+
+  part_name = "rockchip_products"
+}
+
+ohos_prebuilt_static_library("libopencv_bgsegm") {
+  if (target_cpu == "arm64") {
+    source = "lib64/libopencv_bgsegm.a"
+  } else {
+    source = "lib/libopencv_bgsegm.a"
+  }
+  public_configs = [ ":opencv_config" ]
+
+  part_name = "rockchip_products"
+
+}
+
+ohos_prebuilt_static_library("libopencv_bioinspired") {
+  if (target_cpu == "arm64") {
+    source = "lib64/libopencv_bioinspired.a"
+  } else {
+    source = "lib/libopencv_bioinspired.a"
+  }
+  public_configs = [ ":opencv_config" ]
+
+  part_name = "rockchip_products"
+
+}
+
+ohos_prebuilt_static_library("libopencv_calib3d") {
+  if (target_cpu == "arm64") {
+    source = "lib64/libopencv_calib3d.a"
+  } else {
+    source = "lib/libopencv_calib3d.a"
+  }
+  public_configs = [ ":opencv_config" ]
+
+  part_name = "rockchip_products"
+
+}
+
+ohos_prebuilt_static_library("libopencv_ccalib") {
+  if (target_cpu == "arm64") {
+    source = "lib64/libopencv_ccalib.a"
+  } else {
+    source = "lib/libopencv_ccalib.a"
+  }
+  public_configs = [ ":opencv_config" ]
+
+  part_name = "rockchip_products"
+
+}
+
+ohos_prebuilt_static_library("libopencv_core") {
+  if (target_cpu == "arm64") {
+    source = "lib64/libopencv_core.a"
+  } else {
+    source = "lib/libopencv_core.a"
+  }
+  public_configs = [ ":opencv_config" ]
+
+  part_name = "rockchip_products"
+
+}
+
+ohos_prebuilt_static_library("libopencv_datasets") {
+  if (target_cpu == "arm64") {
+    source = "lib64/libopencv_datasets.a"
+  } else {
+    source = "lib/libopencv_datasets.a"
+  }
+  public_configs = [ ":opencv_config" ]
+
+  part_name = "rockchip_products"
+
+}
+
+ohos_prebuilt_static_library("libopencv_dnn_objdetect") {
+  if (target_cpu == "arm64") {
+    source = "lib64/libopencv_dnn_objdetect.a"
+  } else {
+    source = "lib/libopencv_dnn_objdetect.a"
+  }
+  public_configs = [ ":opencv_config" ]
+
+  part_name = "rockchip_products"
+
+}
+
+ohos_prebuilt_static_library("libopencv_dnn") {
+  if (target_cpu == "arm64") {
+    source = "lib64/libopencv_dnn.a"
+  } else {
+    source = "lib/libopencv_dnn.a"
+  }
+  public_configs = [ ":opencv_config" ]
+
+  part_name = "rockchip_products"
+
+}
+
+ohos_prebuilt_static_library("libopencv_dnn_superres") {
+  if (target_cpu == "arm64") {
+    source = "lib64/libopencv_dnn_superres.a"
+  } else {
+    source = "lib/libopencv_dnn_superres.a"
+  }
+  public_configs = [ ":opencv_config" ]
+
+  part_name = "rockchip_products"
+
+}
+
+ohos_prebuilt_static_library("libopencv_dpm") {
+  if (target_cpu == "arm64") {
+    source = "lib64/libopencv_dpm.a"
+  } else {
+    source = "lib/libopencv_dpm.a"
+  }
+  public_configs = [ ":opencv_config" ]
+
+  part_name = "rockchip_products"
+
+}
+
+ohos_prebuilt_static_library("libopencv_face") {
+  if (target_cpu == "arm64") {
+    source = "lib64/libopencv_face.a"
+  } else {
+    source = "lib/libopencv_face.a"
+  }
+  public_configs = [ ":opencv_config" ]
+
+  part_name = "rockchip_products"
+
+}
+
+ohos_prebuilt_static_library("libopencv_features2d") {
+  if (target_cpu == "arm64") {
+    source = "lib64/libopencv_features2d.a"
+  } else {
+    source = "lib/libopencv_features2d.a"
+  }
+  public_configs = [ ":opencv_config" ]
+
+  part_name = "rockchip_products"
+
+}
+
+ohos_prebuilt_static_library("libopencv_flann") {
+  if (target_cpu == "arm64") {
+    source = "lib64/libopencv_flann.a"
+  } else {
+    source = "lib/libopencv_flann.a"
+  }
+  public_configs = [ ":opencv_config" ]
+
+  part_name = "rockchip_products"
+
+}
+
+ohos_prebuilt_static_library("libopencv_fuzzy") {
+  if (target_cpu == "arm64") {
+    source = "lib64/libopencv_fuzzy.a"
+  } else {
+    source = "lib/libopencv_fuzzy.a"
+  }
+  public_configs = [ ":opencv_config" ]
+
+  part_name = "rockchip_products"
+
+}
+
+ohos_prebuilt_static_library("libopencv_gapi") {
+  if (target_cpu == "arm64") {
+    source = "lib64/libopencv_gapi.a"
+  } else {
+    source = "lib/libopencv_gapi.a"
+  }
+  public_configs = [ ":opencv_config" ]
+
+  part_name = "rockchip_products"
+
+}
+
+ohos_prebuilt_static_library("libopencv_hfs") {
+  if (target_cpu == "arm64") {
+    source = "lib64/libopencv_hfs.a"
+  } else {
+    source = "lib/libopencv_hfs.a"
+  }
+  public_configs = [ ":opencv_config" ]
+
+  part_name = "rockchip_products"
+
+}
+
+ohos_prebuilt_static_library("libopencv_highgui") {
+  if (target_cpu == "arm64") {
+    source = "lib64/libopencv_highgui.a"
+  } else {
+    source = "lib/libopencv_highgui.a"
+  }
+  public_configs = [ ":opencv_config" ]
+
+  part_name = "rockchip_products"
+
+}
+
+ohos_prebuilt_static_library("libopencv_imgcodecs") {
+  if (target_cpu == "arm64") {
+    source = "lib64/libopencv_imgcodecs.a"
+  } else {
+    source = "lib/libopencv_imgcodecs.a"
+  }
+  public_configs = [ ":opencv_config" ]
+
+  part_name = "rockchip_products"
+
+}
+
+ohos_prebuilt_static_library("libopencv_img_hash") {
+  if (target_cpu == "arm64") {
+    source = "lib64/libopencv_img_hash.a"
+  } else {
+    source = "lib/libopencv_img_hash.a"
+  }
+  public_configs = [ ":opencv_config" ]
+
+  part_name = "rockchip_products"
+
+}
+
+ohos_prebuilt_static_library("libopencv_imgproc") {
+  if (target_cpu == "arm64") {
+    source = "lib64/libopencv_imgproc.a"
+  } else {
+    source = "lib/libopencv_imgproc.a"
+  }
+  public_configs = [ ":opencv_config" ]
+
+  part_name = "rockchip_products"
+
+}
+
+ohos_prebuilt_static_library("libopencv_intensity_transform") {
+  if (target_cpu == "arm64") {
+    source = "lib64/libopencv_intensity_transform.a"
+  } else {
+    source = "lib/libopencv_intensity_transform.a"
+  }
+  public_configs = [ ":opencv_config" ]
+
+  part_name = "rockchip_products"
+
+}
+
+ohos_prebuilt_static_library("libopencv_line_descriptor") {
+  if (target_cpu == "arm64") {
+    source = "lib64/libopencv_line_descriptor.a"
+  } else {
+    source = "lib/libopencv_line_descriptor.a"
+  }
+  public_configs = [ ":opencv_config" ]
+
+  part_name = "rockchip_products"
+
+}
+
+ohos_prebuilt_static_library("libopencv_mcc") {
+  if (target_cpu == "arm64") {
+    source = "lib64/libopencv_mcc.a"
+  } else {
+    source = "lib/libopencv_mcc.a"
+  }
+  public_configs = [ ":opencv_config" ]
+
+  part_name = "rockchip_products"
+
+}
+
+ohos_prebuilt_static_library("libopencv_ml") {
+  if (target_cpu == "arm64") {
+    source = "lib64/libopencv_ml.a"
+  } else {
+    source = "lib/libopencv_ml.a"
+  }
+  public_configs = [ ":opencv_config" ]
+
+  part_name = "rockchip_products"
+
+}
+
+ohos_prebuilt_static_library("libopencv_objdetect") {
+  if (target_cpu == "arm64") {
+    source = "lib64/libopencv_objdetect.a"
+  } else {
+    source = "lib/libopencv_objdetect.a"
+  }
+  public_configs = [ ":opencv_config" ]
+
+  part_name = "rockchip_products"
+
+}
+
+ohos_prebuilt_static_library("libopencv_photo") {
+  if (target_cpu == "arm64") {
+    source = "lib64/libopencv_photo.a"
+  } else {
+    source = "lib/libopencv_photo.a"
+  }
+  public_configs = [ ":opencv_config" ]
+
+  part_name = "rockchip_products"
+
+}
+
+ohos_prebuilt_static_library("libopencv_plot") {
+  if (target_cpu == "arm64") {
+    source = "lib64/libopencv_plot.a"
+  } else {
+    source = "lib/libopencv_plot.a"
+  }
+  public_configs = [ ":opencv_config" ]
+
+  part_name = "rockchip_products"
+
+}
+
+ohos_prebuilt_static_library("libopencv_text") {
+  if (target_cpu == "arm64") {
+    source = "lib64/libopencv_text.a"
+  } else {
+    source = "lib/libopencv_text.a"
+  }
+  public_configs = [ ":opencv_config" ]
+
+  part_name = "rockchip_products"
+
+}
+
+ohos_prebuilt_static_library("libopencv_videoio") {
+  if (target_cpu == "arm64") {
+    source = "lib64/libopencv_videoio.a"
+  } else {
+    source = "lib/libopencv_videoio.a"
+  }
+  public_configs = [ ":opencv_config" ]
+
+  part_name = "rockchip_products"
+
+}
+
+ohos_prebuilt_static_library("libopencv_videostab") {
+  if (target_cpu == "arm64") {
+    source = "lib64/libopencv_videostab.a"
+  } else {
+    source = "lib/libopencv_videostab.a"
+  }
+  public_configs = [ ":opencv_config" ]
+
+  part_name = "rockchip_products"
+
+}
+
+ohos_prebuilt_static_library("libopencv_video") {
+  if (target_cpu == "arm64") {
+    source = "lib64/libopencv_video.a"
+  } else {
+    source = "lib/libopencv_video.a"
+  }
+  public_configs = [ ":opencv_config" ]
+
+  part_name = "rockchip_products"
+
+}
+
+ohos_prebuilt_static_library("libopencv_wechat_qrcode") {
+  if (target_cpu == "arm64") {
+    source = "lib64/libopencv_wechat_qrcode.a"
+  } else {
+    source = "lib/libopencv_wechat_qrcode.a"
+  }
+  public_configs = [ ":opencv_config" ]
+
+  part_name = "rockchip_products"
+
+}
+
+ohos_prebuilt_static_library("libopencv_ximgproc") {
+  if (target_cpu == "arm64") {
+    source = "lib64/libopencv_ximgproc.a"
+  } else {
+    source = "lib/libopencv_ximgproc.a"
+  }
+  public_configs = [ ":opencv_config" ]
+
+  part_name = "rockchip_products"
+
+}
+
+ohos_prebuilt_static_library("libopencv_xfeatures2d") {
+  if (target_cpu == "arm64") {
+    source = "lib64/libopencv_xfeatures2d.a"
+  } else {
+    source = "lib/libopencv_xfeatures2d.a"
+  }
+  public_configs = [ ":opencv_config" ]
+
+  part_name = "rockchip_products"
+
+}
+
+ohos_prebuilt_static_library("libopencv_xobjdetect") {
+  if (target_cpu == "arm64") {
+    source = "lib64/libopencv_xobjdetect.a"
+  } else {
+    source = "lib/libopencv_xobjdetect.a"
+  }
+  public_configs = [ ":opencv_config" ]
+
+  part_name = "rockchip_products"
+
+}
+
+ohos_prebuilt_static_library("libopencv_xphoto") {
+  if (target_cpu == "arm64") {
+    source = "lib64/libopencv_xphoto.a"
+  } else {
+    source = "lib/libopencv_xphoto.a"
+  }
+  public_configs = [ ":opencv_config" ]
+
+  part_name = "rockchip_products"
+
+}
+
+group("opencv") {
+  deps = [
+    ":libopencv_aruco",
+    ":libopencv_barcode",
+    ":libopencv_bgsegm",
+    ":libopencv_bioinspired",
+    ":libopencv_calib3d",
+    ":libopencv_ccalib",
+    ":libopencv_core",
+    ":libopencv_datasets",
+    ":libopencv_dnn",
+    ":libopencv_dnn_objdetect",
+    ":libopencv_dnn_superres",
+    ":libopencv_dpm",
+    ":libopencv_face",
+    ":libopencv_features2d",
+    ":libopencv_flann",
+    ":libopencv_fuzzy",
+    ":libopencv_gapi",
+    ":libopencv_hfs",
+    ":libopencv_highgui",
+    ":libopencv_img_hash",
+    ":libopencv_imgcodecs",
+    ":libopencv_imgproc",
+    ":libopencv_intensity_transform",
+    ":libopencv_line_descriptor",
+    ":libopencv_mcc",
+    ":libopencv_ml",
+    ":libopencv_objdetect",
+
+    # ":libopencv_optflow",
+    # ":libopencv_phase_unwrapping",
+    ":libopencv_photo",
+    ":libopencv_plot",
+
+    # ":libopencv_quality",
+    # ":libopencv_rapid",
+    # ":libopencv_reg",
+    # ":libopencv_rgbd",
+    # ":libopencv_saliency",
+    # ":libopencv_shape",
+    # ":libopencv_stereo",
+    # ":libopencv_stitching",
+    # ":libopencv_structured_light",
+    # ":libopencv_superres",
+    # ":libopencv_surface_matching",
+    ":libopencv_text",
+    ":libopencv_video",
+
+    # ":libopencv_tracking",
+    ":libopencv_videoio",
+
+    ":libopencv_videostab",
+    ":libopencv_wechat_qrcode",
+
+    ":libopencv_xfeatures2d",
+    ":libopencv_ximgproc",
+    ":libopencv_xobjdetect",
+    ":libopencv_xphoto",
+  ]
+}
+
+ohos_prebuilt_static_library("libade") {
+  if (target_cpu == "arm64") {
+    source = "lib64/opencv4/3rdparty/libade.a"
+  } else {
+    source = "lib/opencv4/3rdparty/libade.a"
+  }
+  public_configs = [ ":opencv_config" ]
+
+  part_name = "rockchip_products"
+
+}
+
+ohos_prebuilt_static_library("libittnotify") {
+  if (target_cpu == "arm64") {
+    source = "lib64/opencv4/3rdparty/libittnotify.a"
+  } else {
+    source = "lib/opencv4/3rdparty/libittnotify.a"
+  }
+  public_configs = [ ":opencv_config" ]
+
+  part_name = "rockchip_products"
+
+}
+
+ohos_prebuilt_static_library("liblibjpeg-turbo") {
+  if (target_cpu == "arm64") {
+    source = "lib64/opencv4/3rdparty/liblibjpeg-turbo.a"
+  } else {
+    source = "lib/opencv4/3rdparty/liblibjpeg-turbo.a"
+  }
+  public_configs = [ ":opencv_config" ]
+
+  part_name = "rockchip_products"
+
+}
+
+ohos_prebuilt_static_library("liblibopenjp2") {
+  if (target_cpu == "arm64") {
+    source = "lib64/opencv4/3rdparty/liblibopenjp2.a"
+  } else {
+    source = "lib/opencv4/3rdparty/liblibopenjp2.a"
+  }
+  public_configs = [ ":opencv_config" ]
+
+  part_name = "rockchip_products"
+
+}
+
+ohos_prebuilt_static_library("liblibpng") {
+  if (target_cpu == "arm64") {
+    source = "lib64/opencv4/3rdparty/liblibpng.a"
+  } else {
+    source = "lib/opencv4/3rdparty/liblibpng.a"
+  }
+  public_configs = [ ":opencv_config" ]
+
+  part_name = "rockchip_products"
+
+}
+
+ohos_prebuilt_static_library("liblibprotobuf") {
+  if (target_cpu == "arm64") {
+    source = "lib64/opencv4/3rdparty/liblibprotobuf.a"
+  } else {
+    source = "lib/opencv4/3rdparty/liblibprotobuf.a"
+  }
+  public_configs = [ ":opencv_config" ]
+
+  part_name = "rockchip_products"
+
+}
+
+ohos_prebuilt_static_library("liblibtiff") {
+  if (target_cpu == "arm64") {
+    source = "lib64/opencv4/3rdparty/liblibtiff.a"
+  } else {
+    source = "lib/opencv4/3rdparty/liblibtiff.a"
+  }
+  public_configs = [ ":opencv_config" ]
+
+  part_name = "rockchip_products"
+
+}
+
+ohos_prebuilt_static_library("liblibwebp") {
+  if (target_cpu == "arm64") {
+    source = "lib64/opencv4/3rdparty/liblibwebp.a"
+  } else {
+    source = "lib/opencv4/3rdparty/liblibwebp.a"
+  }
+  public_configs = [ ":opencv_config" ]
+
+  part_name = "rockchip_products"
+
+}
+
+ohos_prebuilt_static_library("libquirc") {
+  if (target_cpu == "arm64") {
+    source = "lib64/opencv4/3rdparty/libquirc.a"
+  } else {
+    source = "lib/opencv4/3rdparty/libquirc.a"
+  }
+  public_configs = [ ":opencv_config" ]
+
+  part_name = "rockchip_products"
+
+}
+
+ohos_prebuilt_static_library("libtegra_hal") {
+  if (target_cpu == "arm64") {
+    source = "lib64/opencv4/3rdparty/libtegra_hal.a"
+  } else {
+    source = "lib/opencv4/3rdparty/libtegra_hal.a"
+  }
+  public_configs = [ ":opencv_config" ]
+
+  part_name = "rockchip_products"
+
+}
+
+group("opencv_3rdparty") {
+  deps = [
+    ":libade",
+    ":libittnotify",
+    ":liblibjpeg-turbo",
+    ":liblibopenjp2",
+    ":liblibpng",
+    ":liblibprotobuf",
+    ":liblibtiff",
+    ":liblibwebp",
+    ":libquirc",
+    ":libtegra_hal",
+  ]
+}

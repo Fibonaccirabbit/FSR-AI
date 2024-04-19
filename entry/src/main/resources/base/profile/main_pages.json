@@ -1,0 +1,8 @@
+{
+  "src": [
+    "pages/Index",
+    "pages/Classification",
+    "pages/ObjectDetect",
+    "pages/RknnYolo"
+  ]
+}

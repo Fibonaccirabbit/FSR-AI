@@ -1,0 +1,16 @@
+{
+  "license": "",
+  "devDependencies": {
+    "@types/libmobilenetV2.so": "file:./src/main/cpp/types/libmobilenetV2",
+    "@types/libssd300.so": "file:./src/main/cpp/types/libssd300",
+    "@types/libfpr.so": "file:./src/main/cpp/types/libfpr"
+  },
+  "author": "",
+  "name": "entry",
+  "description": "Please describe the basic information.",
+  "main": "",
+  "version": "1.0.0",
+  "dependencies": {
+
+  }
+}
