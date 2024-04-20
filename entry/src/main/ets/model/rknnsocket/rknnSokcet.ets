@@ -12,14 +12,18 @@ interface ObjectDesc {
   prop?: number;
 }
 // 定义一个eventId为1的事件
-let RknnEvent: emitter.InnerEvent = {
+let RknnYoloEvent: emitter.InnerEvent = {
   eventId: 3
+};
+
+let RknnSegEvent: emitter.InnerEvent = {
+  eventId: 4
 };
 
 let TAG = "[FSR-SOCKET]"
 
 export default class rknnSocket {
-  private tcpServer: socket.TCPSocket;
+  public tcpServer: socket.TCPSocket;
   private ipAddress: socket.NetAddress;
   private address = "192.168.50.59";
   private port = 12700;
@@ -28,11 +32,13 @@ export default class rknnSocket {
   private preTime = 0;
   private curTime = 0;
   private fps;
+  private RKNN_YOLO = 3;
+  private RKNN_SEG = 4;
 
   constructor(ip: string, port: number) {
     this.tcpServer = socket.constructTCPSocketInstance();
     this.ipAddress = {} as socket.NetAddress;
-    this.ipAddress.address = this.address;
+    this.ipAddress.address = "192.168.50.59";
     this.ipAddress.port = this.port;
   }
 
@@ -60,9 +66,10 @@ export default class rknnSocket {
       }
       Logger.info(TAG, "on connect received:" + str);
       this.curTime = new Date().getTime();
-      this.fps = Math.floor(1000/(this.curTime - this.preTime));
+      this.fps = Math.floor(1000 / (this.curTime - this.preTime));
       this.preTime = this.curTime;
-      this.resolveRknnResult(str);
+      // this.resolveRknnYoloResult(str);
+      this.resolveRknnSegResult(str);
 
     });
     this.tcpServer.on('connect', () => {
@@ -71,6 +78,18 @@ export default class rknnSocket {
     });
     this.tcpServer.on('close', () => {
       Logger.info(TAG, "on close");
+    });
+  }
+
+  bindLocal(){
+    this.tcpServer = socket.constructTCPSocketInstance();
+    this.tcpServer.bind(this.ipAddress, (err: BusinessError) => {
+      if (err) {
+        Logger.info(TAG, "bind fail");
+        return;
+      }
+      Logger.info(TAG, "bind success");
+      this.connectRknnServer(this.rknnServerIP, this.rknnServerPort);
     });
   }
 
@@ -122,7 +141,7 @@ export default class rknnSocket {
     })
   }
 
-  resolveRknnResult(result: string) {
+  resolveRknnYoloResult(result: string) {
     let targets: string[] = result.split("@");
     let rknnData: ObjectDesc [] = [];
     targets.forEach((target: string) => {
@@ -134,14 +153,12 @@ export default class rknnSocket {
         t.xmax = parseInt(xmax);
         t.ymax = parseInt(ymax);
         t.label = label;
-        t.prop = parseFloat(prop)*100
+        t.prop = parseFloat(prop) * 100
 
         rknnData.push(t);
       }
     })
     Logger.info(TAG, JSON.stringify(rknnData));
-
-
     let eventData = {
       data: {
         "content": JSON.stringify(rknnData),
@@ -151,8 +168,22 @@ export default class rknnSocket {
       }
     };
     // 发送eventId为1的事件，事件内容为eventData
-    emitter.emit(RknnEvent, eventData);
+    emitter.emit(RknnYoloEvent, eventData);
+  }
 
+  resolveRknnSegResult(result: string) {
+
+    Logger.info(TAG, JSON.stringify(result));
+    let eventData = {
+      data: {
+        "content": result.split(",")[1],
+        "fps": JSON.stringify(this.fps),
+        "id": 1,
+        "isEmpty": false,
+      }
+    };
+    // 发送eventId为1的事件，事件内容为eventData
+    emitter.emit(RknnSegEvent, eventData);
   }
 
   close() {

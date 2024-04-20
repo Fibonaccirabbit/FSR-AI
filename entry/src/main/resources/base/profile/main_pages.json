@@ -3,6 +3,7 @@
     "pages/Index",
     "pages/Classification",
     "pages/ObjectDetect",
-    "pages/RknnYolo"
+    "pages/RknnYolo",
+    "pages/RknnSeg"
   ]
 }

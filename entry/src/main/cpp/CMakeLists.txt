@@ -28,6 +28,8 @@ add_library(fpr SHARED
       src/utils/mindsporeLite.cpp
       src/utils/nn.cpp
     )
+
+
 # opencv
 ## libopencv_core
 add_library( libopencv_core STATIC IMPORTED)
@@ -158,13 +160,16 @@ set_target_properties(libtegra_hal
         PROPERTIES IMPORTED_LOCATION
         ${NATIVE_ROOT_PATH}/third_party/opencv/${OHOS_ARCH}/opencv4/3rdparty/libtegra_hal.a)
 
+
+
+
 ## libnnrt
 add_library( libnnrt SHARED IMPORTED )
 set_target_properties(libnnrt
         PROPERTIES IMPORTED_LOCATION
         ${NATIVE_ROOT_PATH}/third_party/rknn/lib/librknnrt.so)
 
-set(FSRMODELZOO mobilenetV2 ssd300 fpr)
+set(FSRMODELZOO mobilenetV2 ssd300 fpr )
 foreach(EXE ${FSRMODELZOO})
     target_link_libraries(${EXE} PUBLIC libopencv_core)
     target_link_libraries(${EXE} PUBLIC libopencv_imgcodecs)

@@ -3,7 +3,8 @@
   "devDependencies": {
     "@types/libmobilenetV2.so": "file:./src/main/cpp/types/libmobilenetV2",
     "@types/libssd300.so": "file:./src/main/cpp/types/libssd300",
-    "@types/libfpr.so": "file:./src/main/cpp/types/libfpr"
+    "@types/libfpr.so": "file:./src/main/cpp/types/libfpr",
+    "@types/libeyetracking.so": "file:./src/main/cpp/types/libeyetracking"
   },
   "author": "",
   "name": "entry",

@@ -13,11 +13,13 @@
  * limitations under the License.
  */
 
-import CameraModel from '../model/rknnyolo/CameraModel';
+import CameraModel from '../model/rknnseg/CameraModel';
 import Logger from '../utlis/Logger';
 import util from '@ohos.util';
 import emitter from "@ohos.events.emitter";
 import display from '@ohos.display';
+import rknnSocket from '../model/rknnsocket/rknnSokcet';
+import socket from '@ohos.net.socket';
 
 const TAG: string = '[FSR-AI-RKNN]';
 
@@ -30,8 +32,8 @@ interface ObjectDesc {
   prop?: number;
 }
 // 定义一个eventId为1的事件
-let RknnYoloEvent: emitter.InnerEvent = {
-  eventId: 3
+let RknnSegEvent: emitter.InnerEvent = {
+  eventId: 4
 };
 
 @Entry
@@ -70,28 +72,31 @@ struct CameraPage {
   @State numX: number = 0.0;
   @State conf: string = '0';
   @State fps: number = 0;
+  @State base64: string = "";
   private scale_factor_x = 2;
   private scale_factor_y = 2;
   private camera_show_width = 1280;
   private camera_show_height = 1080;
+  public socket: rknnSocket = new rknnSocket("127.0.0.1", 12600);
 
   aboutToAppear() {
     // 收到eventId为1的事件后执行该回调
-    let callback = (eventData) => {
-      Logger.info(TAG, "event callback")
-      this.pointData = JSON.parse(eventData.data.content);
-      this.fps = parseInt(eventData.data.fps);
-      Logger.info(TAG, JSON.stringify(eventData));
-    };
-    // 订阅eventId为1的事件
-    emitter.on(RknnYoloEvent, callback);
-    let displayClass: display.Display | null = null;
-    try {
-      displayClass = display.getDefaultDisplaySync();
-      Logger.info(TAG,displayClass.width.toString()+ " " + displayClass.height.toString());
-    } catch (exception) {
-      console.error('Failed to obtain the default display object. Code: ' + JSON.stringify(exception));
-    }
+    this.onMsg();
+  }
+
+  onMsg() {
+    this.socket.bindLocal();
+    this.socket.tcpServer.on('message', (value: SocketInfo) => {
+      Logger.info(TAG, "on message");
+      let buffer = value.message;
+      let dataView = new DataView(buffer);
+      let str = "";
+      for (let i = 0; i < dataView.byteLength; ++i) {
+        str += String.fromCharCode(dataView.getUint8(i));
+      }
+      this.base64 = str;
+      Logger.info(TAG, "on connect received:" + str);
+    });
   }
 
   onPageHide() {
@@ -106,41 +111,31 @@ struct CameraPage {
     Column() {
       Row() {
         Stack() {
-            ForEach(this.pointData, (item: ObjectDesc, index) => {
-              Column() {
-                Text(item.label)
-                  .fontSize(24)
-                  .fontColor(this.colorSet[index % 4])
-                Text(String(item.prop).substring(0, 4) + '%')
-                  .fontSize(12)
-                  .fontColor(this.colorSet[index % 4])
-              }
-              .position({ x: px2vp(1280 - item.xmax*this.scale_factor_x), y: px2vp(item.ymin*this.scale_factor_y) })
-              .width(px2vp((item.xmax - item.xmin)*this.scale_factor_x))
-              .height(px2vp((item.ymax - item.ymin)*this.scale_factor_y))
-              .borderWidth(2)
-              .borderColor(this.colorSet[index % 4])
-              .zIndex(index + 1)
-            })
-            XComponent({
-              id: 'componentId',
-              type: 'surface',
-              controller: this.mXComponentController
-            })
-              .onLoad(async () => {
-                Logger.info(TAG, 'onLoad is called');
-                this.mXComponentController.setXComponentSurfaceSize({ surfaceWidth: 1080, surfaceHeight: 1920 });
-                this.surfaceId = this.mXComponentController.getXComponentSurfaceId();
-                Logger.info(TAG, `onLoad surfaceId: ${this.surfaceId}`);
-                this.cameraModel.initCamera(this.surfaceId, this.modelId);
-                this.cameraModel.onImageArrival((value: number, fps: number) => {
-                })
+          Image(this.base64)
+
+            .zIndex(2)
+            .opacity(0.5)
+            .objectFit(ImageFit.Cover)
+          XComponent({
+            id: 'componentId',
+            type: 'surface',
+            controller: this.mXComponentController
+          })
+            .onLoad(async () => {
+              Logger.info(TAG, 'onLoad is called');
+              this.mXComponentController.setXComponentSurfaceSize({ surfaceWidth: 1080, surfaceHeight: 1920 });
+              this.surfaceId = this.mXComponentController.getXComponentSurfaceId();
+              Logger.info(TAG, `onLoad surfaceId: ${this.surfaceId}`);
+              this.cameraModel.initCamera(this.surfaceId, this.modelId,this.socket);
+              this.cameraModel.onImageArrival((value: number, fps: number) => {
               })
-          }
-          .backgroundColor("#ffc63333")
-          .alignSelf(ItemAlign.Start)
-          .width("1280px")
-          .height("960px")
+            })
+        }
+        .backgroundColor("#ffc63333")
+        .alignSelf(ItemAlign.Start)
+        .width("1280px")
+        .height("960px")
+
         Column({ space: 20 }) {
           Text("rknn Yolov5")
             .fontSize(42)
@@ -180,4 +175,9 @@ struct CameraPage {
   async aboutToDisappear() {
     await this.cameraModel.cameraRelease();
   }
+}
+
+class SocketInfo {
+  message: ArrayBuffer = new ArrayBuffer(1);
+  remoteInfo: socket.SocketRemoteInfo = {} as socket.SocketRemoteInfo;
 }

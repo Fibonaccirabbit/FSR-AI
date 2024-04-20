@@ -27,6 +27,7 @@ import fs from '@ohos.file.fs';
 
 import fileio from '@ohos.fileio';
 import systemDateTime from '@ohos.systemDateTime';
+import socket from '@ohos.bluetooth.socket';
 // 定义一个eventId为1的事件，事件优先级为Low
 let event: emitter.InnerEvent = {
   eventId: 1,
@@ -70,7 +71,7 @@ export default class CameraService {
   private capability: camera.CameraOutputCapability = undefined;
   private receiver: image.ImageReceiver = undefined;
   private context: Context = getContext(this);
-  private socket: rknnSocket = new rknnSocket("127.0.0.1", 12600);
+  private socket: rknnSocket ;
 
   constructor() {
     this.receiver = image.createImageReceiver(
@@ -79,7 +80,7 @@ export default class CameraService {
       image.ImageFormat.JPEG,
       1
     );
-    this.socket.prepare();
+    // this.socket.prepare();
   }
 
   setImageTest(imageSet: Resource): Uint8Array {
@@ -179,8 +180,9 @@ export default class CameraService {
    * 初始化相机
    * @param surfaceId
    */
-  async initCamera(surfaceId: string, modelId: number): Promise<void> {
+  async initCamera(surfaceId: string, modelId: number,socket:rknnSocket): Promise<void> {
     // this.modelId = modelId;
+    this.socket = socket;
     await this.cameraRelease();
     Logger.info(TAG, 'getCameraManager begin');
     try {
