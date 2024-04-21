@@ -15,47 +15,15 @@
 
 import camera from '@ohos.multimedia.camera';
 import image from '@ohos.multimedia.image';
-import mediaLibrary from '@ohos.multimedia.mediaLibrary';
 import Logger from '../../utlis/Logger';
 import { BusinessError, Callback } from '@ohos.base';
 import mobilenetV2 from 'libmobilenetV2.so';
-import emitter from "@ohos.events.emitter";
-import performanceMonitor from '@ohos.arkui.performanceMonitor';
 
-// 定义一个eventId为1的事件，事件优先级为Low
-let event: emitter.InnerEvent = {
-  eventId: 1,
-  priority: emitter.EventPriority.HIGH
-};
+
 interface CameraInfo {
   width: number;
   height: number;
 }
-
-interface InferResult {
-  count?: number;
-  objects?: ObjectDesc[];
-}
-
-interface ObjectDesc {
-  left?: number;
-  top?: number;
-  right?: number;
-  bottom?: number;
-  prop?: number;
-  name?: string;
-}
-
-interface ClsInferResult {
-  count?: number;
-  objects?: ClsDesc[];
-}
-
-interface ClsDesc {
-  index:number;
-  score:number;
-}
-
 interface PicDesc {
   width: number;
   height: number;
@@ -115,7 +83,7 @@ export default class CameraService {
         Logger.info(TAG, `Succeeded in obtaining the image information. and width = ${imageInfo.size.width} , height = ${imageInfo.size.height} `);
         imageSourceApi.createPixelMap().then((pixelMap: image.PixelMap) => {
           Logger.info(TAG, `Succeeded in creating pixelMap object through image decoding parameters.`);
-          const readBuffer: ArrayBuffer = new ArrayBuffer(pixelMap.getPixelBytesNumber());//1382400
+          const readBuffer: ArrayBuffer = new ArrayBuffer(pixelMap.getPixelBytesNumber()); //1382400
           pixelMap.readPixelsToBuffer(readBuffer).then(() => {
             Logger.info(TAG, 'Succeeded in reading image pixel data.'); //符合条件则进入
 
@@ -153,7 +121,7 @@ export default class CameraService {
    * 通过ImageReceiver实时获取预览图像。
    * @param receiver
    */
-  onImageArrival(callback: (value:number,fps:number)=>void): void {
+  onImageArrival(callback: (value: number, fps: number) => void): void {
     this.receiver.on('imageArrival', () => {
       //setInterval(() => {
       this.receiver.readNextImage((err: BusinessError, nextImage: image.Image) => {
@@ -161,7 +129,7 @@ export default class CameraService {
           return;
         }
 
-        nextImage.getComponent(image.ComponentType.JPEG,  (err: BusinessError, imgComponent: image.Component) => {
+        nextImage.getComponent(image.ComponentType.JPEG, (err: BusinessError, imgComponent: image.Component) => {
           if (err || imgComponent === undefined) {
             return;
           }
@@ -179,21 +147,21 @@ export default class CameraService {
             dataSize: buffer.byteLength
           }
           // let inputBuffer = await this.test(buffer);
-          let f32 = new Float32Array(640*480*4);
+          let f32 = new Float32Array(640 * 480 * 4);
           f32.set(new Float32Array(new Uint8Array(buffer)))
-          console.info(TAG+f32[f32.length-1]+" "+buffer.byteLength.toString())
+          console.info(TAG + f32[f32.length-1] + " " + buffer.byteLength.toString())
           // 如果每张img都处理，app会卡并且画框有滞后性能为13帧；每2张img推理1张会流畅很多，性能可达到12帧
           // 利用napi异步工作队列，最多有4个线程并行
-          if ((number % 12) == 0 ) {
-              // @ts-ignore
+          if ((number % 12) == 0) {
+            // @ts-ignore
             Logger.info(TAG, `================Process pic number = ${number}`);
             const startTime = new Date().getTime();
-            console.info(TAG+f32.byteLength.toString())
-            let value =mobilenetV2.modelInference(f32.buffer);
+            console.info(TAG + f32.byteLength.toString())
+            let value = mobilenetV2.modelInference(f32.buffer);
             const endTime = new Date().getTime();
-            callback(value,Math.floor(1000/(endTime-startTime)));
+            callback(value, Math.floor(1000 / (endTime - startTime)));
           }
-          number ++;
+          number++;
           nextImage.release();
         })
       })
@@ -295,22 +263,26 @@ export default class CameraService {
     }
   }
 
-  async test(inputBuffer){
+  async test(inputBuffer) {
     let sourceOptions: image.SourceOptions = {
       sourceDensity: 120,
       sourcePixelFormat: 3,
-      sourceSize: { height: 224, width: 224 }
+      sourceSize: {
+        height: 224, width: 224
+      }
     };
     const imageSourceApi = image.createImageSource(inputBuffer);
     let decodingOptions: image.DecodingOptions = {
       sampleSize: 1,
       editable: true,
-      desiredSize: { width: 224, height: 224 },
+      desiredSize: {
+        width: 224, height: 224
+      },
       desiredPixelFormat: 3,
     };
     let pixel: PixelMap = await imageSourceApi.createPixelMap(decodingOptions)
     // 场景一：将读取的整张图像像素数据结果写入ArrayBuffer中
-    let readBuffer : ArrayBuffer = new ArrayBuffer(pixel.getPixelBytesNumber());
+    let readBuffer: ArrayBuffer = new ArrayBuffer(pixel.getPixelBytesNumber());
     await pixel.readPixelsToBuffer(readBuffer).then(() => {
       console.log(TAG + '=========无损 input image byte length: ' + readBuffer.byteLength)
       console.info(TAG + 'Succeeded in reading image pixel data.');
@@ -320,5 +292,4 @@ export default class CameraService {
 
     return readBuffer;
   }
-
 }

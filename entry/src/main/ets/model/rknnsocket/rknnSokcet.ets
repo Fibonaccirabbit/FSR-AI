@@ -32,19 +32,16 @@ export default class rknnSocket {
   private preTime = 0;
   private curTime = 0;
   private fps;
-  private RKNN_YOLO = 3;
-  private RKNN_SEG = 4;
 
   constructor(ip: string, port: number) {
     this.tcpServer = socket.constructTCPSocketInstance();
     this.ipAddress = {} as socket.NetAddress;
-    this.ipAddress.address = "192.168.50.59";
-    this.ipAddress.port = this.port;
+    this.ipAddress.address = ip;
+    this.ipAddress.port = port;
   }
 
   prepare() {
     // 创建一个TCPSocket连接，返回一个TCPSocket对象。
-
     this.tcpServer = socket.constructTCPSocketInstance();
     this.tcpServer.bind(this.ipAddress, (err: BusinessError) => {
       if (err) {
@@ -68,9 +65,7 @@ export default class rknnSocket {
       this.curTime = new Date().getTime();
       this.fps = Math.floor(1000 / (this.curTime - this.preTime));
       this.preTime = this.curTime;
-      // this.resolveRknnYoloResult(str);
-      this.resolveRknnSegResult(str);
-
+      this.resolveRknnYoloResult(str);
     });
     this.tcpServer.on('connect', () => {
       Logger.info(TAG, "on connect");
@@ -81,7 +76,7 @@ export default class rknnSocket {
     });
   }
 
-  bindLocal(){
+  bindLocal() {
     this.tcpServer = socket.constructTCPSocketInstance();
     this.tcpServer.bind(this.ipAddress, (err: BusinessError) => {
       if (err) {

@@ -17,24 +17,10 @@ import CameraModel from '../model/rknnseg/CameraModel';
 import Logger from '../utlis/Logger';
 import util from '@ohos.util';
 import emitter from "@ohos.events.emitter";
-import display from '@ohos.display';
 import rknnSocket from '../model/rknnsocket/rknnSokcet';
 import socket from '@ohos.net.socket';
 
 const TAG: string = '[FSR-AI-RKNN]';
-
-interface ObjectDesc {
-  xmin?: number;
-  ymin?: number;
-  xmax?: number;
-  ymax?: number;
-  label?: string;
-  prop?: number;
-}
-// 定义一个eventId为1的事件
-let RknnSegEvent: emitter.InnerEvent = {
-  eventId: 4
-};
 
 @Entry
 @Component
@@ -42,49 +28,17 @@ struct CameraPage {
   private mXComponentController: XComponentController = new XComponentController();
   private surfaceId: string = '-1';
   private cameraModel: CameraModel = new CameraModel();
-  @State imageThumbnail: string = '';
-  @State videoThumbnail: Resource | undefined = undefined;
-  @State isRecording: boolean = false;
-  @State textMove: number = 45;
-  @State isPointShow: boolean = true;
-  @State isTitleShow: boolean = true;
-  @State timeShow: boolean = false;
-  @State format: string = 'mm:ss';
-  @State message: string = 'Hello World';
-  @State widthCanvas: number = 100;
-  @State heightCanvas: number = 100;
-  @State xmin: number = 0;
-  @State ymin: number = 0;
-  @State xmax: number = 0;
-  @State ymax: number = 0;
-  @State pointData: ObjectDesc[] = [];
-  @State boxQuan: number = 0;
-  @State colorSet: Color[] = [Color.Red, Color.Green, Color.Yellow, Color.Blue];
-  @State indexSet: number[] = [1, 2, 3];
-  @State imageHeight: number = 0;
-  @State imageWidth: number = 0;
-  @State dataSize: number = 0;
-  @State result: number = 0;
-  @State resultTime: number = 0;
   @State modelId: number = 0;
-  @State outputData: number = 0;
-  @State imageNumber: number = 0;
-  @State numX: number = 0.0;
-  @State conf: string = '0';
   @State fps: number = 0;
   @State base64: string = "";
-  private scale_factor_x = 2;
-  private scale_factor_y = 2;
-  private camera_show_width = 1280;
-  private camera_show_height = 1080;
   public socket: rknnSocket = new rknnSocket("127.0.0.1", 12600);
 
   aboutToAppear() {
     // 收到eventId为1的事件后执行该回调
-    this.onMsg();
+    this.onRknnMsg();
   }
 
-  onMsg() {
+  onRknnMsg() {
     this.socket.bindLocal();
     this.socket.tcpServer.on('message', (value: SocketInfo) => {
       Logger.info(TAG, "on message");

@@ -17,11 +17,6 @@ import CameraModel from '../model/classification/CameraModel';
 import grantPermission from '../utlis/PermissionUtils';
 import Logger from '../utlis/Logger';
 import util from '@ohos.util';
-import { BusinessError } from '@ohos.base';
-import prompt from '@ohos.prompt';
-import image from '@ohos.multimedia.image';
-import fs from '@ohos.file.fs';
-
 import mobilenetV2 from 'libmobilenetV2.so';
 import imageNet2012 from '../utlis/ImageNet2012Labels';
 
@@ -33,41 +28,9 @@ struct CameraPage {
   private mXComponentController: XComponentController = new XComponentController();
   private surfaceId: string = '-1';
   private cameraModel: CameraModel = new CameraModel();
-  @State imageThumbnail: string = '';
-  @State videoThumbnail: Resource | undefined = undefined;
-  @State isRecording: boolean = false;
-  @State textMove: number = 45;
-  @State isPointShow: boolean = true;
-  @State isTitleShow: boolean = true;
-  @State timeShow: boolean = false;
-  @State format: string = 'mm:ss';
-  @State message: string = 'Hello World';
-  @State widthCanvas: number = 100;
-  @State heightCanvas: number = 100;
-  @State p1x: number = 0;
-  @State p1y: number = 0;
-  @State p2x: number = 0;
-  @State p2y: number = 0;
-  @State p3x: number = 0;
-  @State p3y: number = 0;
-  @State p4x: number = 0;
-  @State p4y: number = 0;
-  @State boxQuan: number = 0;
-  @State colorSet: Color[] = [Color.Red, Color.Green, Color.Yellow, Color.Blue];
-  @State indexSet: number[] = [1, 2, 3];
-  @State imageHeight: number = 0;
-  @State imageWidth: number = 0;
-  @State dataSize: number = 0;
-  @State result: number = 0;
-  @State resultTime: number = 0;
   @State modelId: number = 0;
   @State outputData: number = 0;
-  @State imageNumber: number = 0;
-  @State numX: number = 0.0;
-  @State conf: string = '0';
   @State fps: number = 0;
-  private context: Context = getContext(this);
-  private textInputControllerX: TextInputController = new TextInputController();
 
   async aboutToAppear() {
     try {
@@ -80,11 +43,6 @@ struct CameraPage {
 
   onPageHide() {
     Logger.info(TAG, 'onPageHide begin');
-    if (this.isRecording) {
-      Logger.info(TAG, 'stopVideo begin');
-      this.cameraModel.cameraRelease();
-
-    }
     Logger.info(TAG, 'onPageHide end');
   }
 

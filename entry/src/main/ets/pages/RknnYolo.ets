@@ -40,35 +40,14 @@ struct CameraPage {
   private mXComponentController: XComponentController = new XComponentController();
   private surfaceId: string = '-1';
   private cameraModel: CameraModel = new CameraModel();
-  @State imageThumbnail: string = '';
-  @State videoThumbnail: Resource | undefined = undefined;
-  @State isRecording: boolean = false;
-  @State textMove: number = 45;
-  @State isPointShow: boolean = true;
-  @State isTitleShow: boolean = true;
-  @State timeShow: boolean = false;
-  @State format: string = 'mm:ss';
-  @State message: string = 'Hello World';
-  @State widthCanvas: number = 100;
-  @State heightCanvas: number = 100;
   @State xmin: number = 0;
   @State ymin: number = 0;
   @State xmax: number = 0;
   @State ymax: number = 0;
   @State pointData: ObjectDesc[] = [];
-  @State boxQuan: number = 0;
   @State colorSet: Color[] = [Color.Red, Color.Green, Color.Yellow, Color.Blue];
   @State indexSet: number[] = [1, 2, 3];
-  @State imageHeight: number = 0;
-  @State imageWidth: number = 0;
-  @State dataSize: number = 0;
-  @State result: number = 0;
-  @State resultTime: number = 0;
   @State modelId: number = 0;
-  @State outputData: number = 0;
-  @State imageNumber: number = 0;
-  @State numX: number = 0.0;
-  @State conf: string = '0';
   @State fps: number = 0;
   private scale_factor_x = 2;
   private scale_factor_y = 2;
@@ -88,7 +67,7 @@ struct CameraPage {
     let displayClass: display.Display | null = null;
     try {
       displayClass = display.getDefaultDisplaySync();
-      Logger.info(TAG,displayClass.width.toString()+ " " + displayClass.height.toString());
+      Logger.info(TAG, displayClass.width.toString() + " " + displayClass.height.toString());
     } catch (exception) {
       console.error('Failed to obtain the default display object. Code: ' + JSON.stringify(exception));
     }
@@ -106,41 +85,42 @@ struct CameraPage {
     Column() {
       Row() {
         Stack() {
-            ForEach(this.pointData, (item: ObjectDesc, index) => {
-              Column() {
-                Text(item.label)
-                  .fontSize(24)
-                  .fontColor(this.colorSet[index % 4])
-                Text(String(item.prop).substring(0, 4) + '%')
-                  .fontSize(12)
-                  .fontColor(this.colorSet[index % 4])
-              }
-              .position({ x: px2vp(1280 - item.xmax*this.scale_factor_x), y: px2vp(item.ymin*this.scale_factor_y) })
-              .width(px2vp((item.xmax - item.xmin)*this.scale_factor_x))
-              .height(px2vp((item.ymax - item.ymin)*this.scale_factor_y))
-              .borderWidth(2)
-              .borderColor(this.colorSet[index % 4])
-              .zIndex(index + 1)
-            })
-            XComponent({
-              id: 'componentId',
-              type: 'surface',
-              controller: this.mXComponentController
-            })
-              .onLoad(async () => {
-                Logger.info(TAG, 'onLoad is called');
-                this.mXComponentController.setXComponentSurfaceSize({ surfaceWidth: 1080, surfaceHeight: 1920 });
-                this.surfaceId = this.mXComponentController.getXComponentSurfaceId();
-                Logger.info(TAG, `onLoad surfaceId: ${this.surfaceId}`);
-                this.cameraModel.initCamera(this.surfaceId, this.modelId);
-                this.cameraModel.onImageArrival((value: number, fps: number) => {
-                })
+          ForEach(this.pointData, (item: ObjectDesc, index) => {
+            Column() {
+              Text(item.label)
+                .fontSize(24)
+                .fontColor(this.colorSet[index % 4])
+              Text(String(item.prop).substring(0, 4) + '%')
+                .fontSize(12)
+                .fontColor(this.colorSet[index % 4])
+            }
+            .position({ x: px2vp(1280 - item.xmax * this.scale_factor_x), y: px2vp(item.ymin * this.scale_factor_y) })
+            .width(px2vp((item.xmax - item.xmin) * this.scale_factor_x))
+            .height(px2vp((item.ymax - item.ymin) * this.scale_factor_y))
+            .borderWidth(2)
+            .borderColor(this.colorSet[index % 4])
+            .zIndex(index + 1)
+          })
+          XComponent({
+            id: 'componentId',
+            type: 'surface',
+            controller: this.mXComponentController
+          })
+            .onLoad(async () => {
+              Logger.info(TAG, 'onLoad is called');
+              this.mXComponentController.setXComponentSurfaceSize({ surfaceWidth: 1080, surfaceHeight: 1920 });
+              this.surfaceId = this.mXComponentController.getXComponentSurfaceId();
+              Logger.info(TAG, `onLoad surfaceId: ${this.surfaceId}`);
+              this.cameraModel.initCamera(this.surfaceId, this.modelId);
+              this.cameraModel.onImageArrival((value: number, fps: number) => {
               })
-          }
-          .backgroundColor("#ffc63333")
-          .alignSelf(ItemAlign.Start)
-          .width("1280px")
-          .height("960px")
+            })
+        }
+        .backgroundColor("#ffc63333")
+        .alignSelf(ItemAlign.Start)
+        .width("1280px")
+        .height("960px")
+
         Column({ space: 20 }) {
           Text("rknn Yolov5")
             .fontSize(42)
