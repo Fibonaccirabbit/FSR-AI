@@ -2,6 +2,7 @@ import hilog from '@ohos.hilog';
 import mobilenetV2 from 'libmobilenetV2.so'
 import ssd300 from "libssd300.so"
 import fpr from "libfpr.so"
+import depthanything from "libdepthanything.so"
 import abilityAccessCtrl from '@ohos.abilityAccessCtrl';
 import Logger from '../utlis/Logger';
 import image from '@ohos.multimedia.image';
@@ -16,6 +17,7 @@ let TAG = "[FSR-AI]"
 struct Index {
   @State message: string = 'Hello World'
   @State pixel: PixelMap = undefined;
+  @State base64: string = "";
   private socket: rknnSocket = new rknnSocket("127.0.0.1", 12600);
 
   async aboutToAppear() {
@@ -26,6 +28,22 @@ struct Index {
   build() {
     Row() {
       Column() {
+        Text("视频流RKNN-Hand")
+          .fontSize(50)
+          .fontWeight(FontWeight.Bold)
+          .onClick(() => {
+            router.pushUrl({
+              url: 'pages/RknnHandpose' // 目标url
+            })
+          })
+        Text("视频流RKNN-Face")
+          .fontSize(50)
+          .fontWeight(FontWeight.Bold)
+          .onClick(() => {
+            router.pushUrl({
+              url: 'pages/RknnRetinaFace' // 目标url
+            })
+          })
         Text("视频流RKNN-PPSeg")
           .fontSize(50)
           .fontWeight(FontWeight.Bold)
@@ -62,20 +80,20 @@ struct Index {
           .fontSize(50)
           .fontWeight(FontWeight.Bold)
           .onClick(() => {
-            let res: number = fpr.modelInit(getContext(this).resourceManager);
+            let res: number = depthanything.modelInit(getContext(this).resourceManager);
             Logger.info(TAG, res.toString())
           })
         Text("推理模型")
           .fontSize(50)
           .fontWeight(FontWeight.Bold)
           .onClick(() => {
-            this.inferenceHSI()
+            this.inference();
           })
         Text("关闭模型")
           .fontSize(50)
           .fontWeight(FontWeight.Bold)
           .onClick(() => {
-            let res: number = fpr.modelDeInit();
+            let res: number = depthanything.modelDeInit();
             Logger.info(TAG, res.toString())
           })
 
@@ -91,15 +109,20 @@ struct Index {
           .onClick(() => {
             this.sendImage();
           })
-        Text("socket测试解析")
-          .fontSize(50)
-          .fontWeight(FontWeight.Bold)
-          .onClick(() => {
-            this.socket.resolveRknnYoloResult("bird&129&49&512&460@");
-          })
-        Image(someBase64)
+
+          Text("socket测试解析")
+            .fontSize(50)
+            .fontWeight(FontWeight.Bold)
+            .onClick(() => {
+              this.socket.resolveRknnYoloResult("bird&129&49&512&460@");
+            })
+
+
       }
-      .width('100%')
+      .width('50%')
+      Image(this.base64)
+        .width("448px")
+        .height("448px")
     }
     .height('100%')
   }
@@ -123,7 +146,7 @@ struct Index {
     let decodingOptions: image.DecodingOptions = {
       sampleSize: 1,
       editable: true,
-      desiredSize: { height: 480, width: 640 },
+      desiredSize: { height: 224, width: 224 },
       desiredPixelFormat: 3,
     };
     let pixel: PixelMap = await imageSourceApi.createPixelMap(decodingOptions)
@@ -142,7 +165,7 @@ struct Index {
   async inference() {
     let inputData = await this.generatePic();
     console.info(TAG + "输入数据长度" + inputData.byteLength)
-    let f32 = new Float32Array(500 * 374 * 4);
+    let f32 = new Float32Array(224 * 224 * 4);
     let temp = new Uint8Array(inputData)
     // for (let i = 0;i < 100; i++) {
     //   console.info(this.TAG+temp[i])
@@ -152,7 +175,8 @@ struct Index {
     // for(let i =0;i<10;i++){
     //   console.info(this.TAG+uint8[i])
     // }
-    hilog.info(0x0000, TAG, '模型推理结果: %{public}d', mobilenetV2.modelInference(f32.buffer));
+    this.base64 = depthanything.modelInference(f32.buffer);
+    hilog.info(0x0000, TAG, '模型推理结果: %{public}s',this.base64);
   }
 
   async inferenceHSI() {

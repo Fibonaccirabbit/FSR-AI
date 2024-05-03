@@ -162,7 +162,7 @@ export default class CameraService {
 
           // 如果每张img都处理，app会卡并且画框有滞后性能为13帧；每2张img推理1张会流畅很多，性能可达到12帧
           // 利用napi异步工作队列，最多有4个线程并行
-          if ((number % 50) == 0) {
+          if ((number % 60) == 0) {
             // this.savePictureSand(buffer, nextImage);
             this.socket.sendImage(buffer);
             callback(1, 1);

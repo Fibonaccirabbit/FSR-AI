@@ -10,7 +10,11 @@ include_directories(${NATIVE_ROOT_PATH}
                     ${NATIVE_ROOT_PATH}/include
                     ${NATIVE_ROOT_PATH}/third_party/opencv/include/opencv4)
 
-
+add_library(depthanything SHARED
+      src/depthanything.cpp
+      src/utils/mindsporeLite.cpp
+      src/utils/nn.cpp
+    )
 
 add_library(mobilenetV2 SHARED
       src/mobilenetv2.cpp
@@ -169,7 +173,7 @@ set_target_properties(libnnrt
         PROPERTIES IMPORTED_LOCATION
         ${NATIVE_ROOT_PATH}/third_party/rknn/lib/librknnrt.so)
 
-set(FSRMODELZOO mobilenetV2 ssd300 fpr )
+set(FSRMODELZOO mobilenetV2 ssd300 fpr depthanything)
 foreach(EXE ${FSRMODELZOO})
     target_link_libraries(${EXE} PUBLIC libopencv_core)
     target_link_libraries(${EXE} PUBLIC libopencv_imgcodecs)

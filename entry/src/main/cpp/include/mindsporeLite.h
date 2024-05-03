@@ -13,6 +13,8 @@
 #include <mindspore/tensor.h>
 #include <rawfile/raw_file_manager.h>
 #include "Log.h"
+#include <opencv2/opencv.hpp>
+cv::Mat letterbox(cv::Mat &src, int h, int w, std::vector<float> &pad);
 int RunMSLiteModel(OH_AI_ModelHandle model, float *imageData);
 void *ReadModelFile(NativeResourceManager *nativeResourceManager, const std::string &modelName, size_t *modelSize);
 void DestroyModelBuffer(void **buffer);

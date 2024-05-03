@@ -81,17 +81,35 @@ static napi_value modelInference(napi_env env, napi_callback_info info) {
     size_t byteLength = 0;
     void *d = nullptr;
     napi_get_arraybuffer_info(env, argv[0], &d, &byteLength);
-    float *inputData = static_cast<float *>(d);
-    LOGI("长度：%{public}zu", byteLength);
-    nn::transform::Resizer resizer(480,640, 224, 224);
-    resizer.resize(inputData);
-    nn::Config::MobilenetV2Config mConfig(false, true, true);
-    nn::PreProcessor PP(224, 224, mConfig);
-    PP.RGBA = true;
-    PP.Norm = true;
-    PP.HWC = false;
-    // 进行前处理
-    PP.call(inputData);
+    //    float *inputData = static_cast<float *>(d);
+    //    LOGI("长度：%{public}zu", byteLength);
+    //    nn::transform::Resizer resizer(480,640, 224, 224);
+    //    resizer.resize(inputData);
+    //    nn::Config::MobilenetV2Config mConfig(false, true, true);
+    //    nn::PreProcessor PP(224, 224, mConfig);
+    //    PP.RGBA = true;
+    //    PP.Norm = true;
+    //    PP.HWC = false;
+    //    // 进行前处理
+    //    PP.call(inputData);
+    // YUV转RGB
+    cv::Mat rgbImage;
+    cv::Mat yuv(480 * 3 / 2, 640, CV_8UC1);
+    yuv.data = (unsigned char *)(d);
+    cv::cvtColor(yuv, rgbImage, cv::COLOR_YUV420sp2RGB);
+
+    // Resize
+    cv::Size targetSize(224, 224);
+    cv::resize(rgbImage, rgbImage, targetSize);
+    rgbImage.convertTo(rgbImage, CV_32FC3);
+
+    // Norm to (0,1)
+    cv::normalize(rgbImage, rgbImage, 0, 1.0, cv::NORM_MINMAX);
+
+    // copy Mat.data
+    float *inputData = new float[224 * 224 * 3];
+    std::memcpy(inputData, rgbImage.data, 224 * 224 * 3 * sizeof(float));
+
     int res = RunMSLiteModel(modelms, inputData);
     napi_value success_ret;
     napi_create_int32(env, res, &success_ret);
@@ -99,7 +117,6 @@ static napi_value modelInference(napi_env env, napi_callback_info info) {
     LOGI("Exit runDemo()");
     return success_ret;
 }
-
 
 EXTERN_C_START
 static napi_value Init(napi_env env, napi_value exports) {

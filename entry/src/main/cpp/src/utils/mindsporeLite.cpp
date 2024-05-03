@@ -7,6 +7,39 @@
 #include "mindsporeLite.h"
 #include "nn.h"
 
+
+cv::Mat letterbox(cv::Mat &src, int h, int w, std::vector<float> &pad) {
+
+    int in_w = src.cols; // width
+    int in_h = src.rows; // height
+    int tar_w = w;
+    int tar_h = h;
+    float r = std::min(float(tar_h) / in_h, float(tar_w) / in_w);
+    int inside_w = round(in_w * r);
+    int inside_h = round(in_h * r);
+    int pad_w = tar_w - inside_w;
+    int pad_h = tar_h - inside_h;
+
+    cv::Mat resize_img;
+
+    cv::resize(src, resize_img, cv::Size(inside_w, inside_h));
+
+    pad_w = pad_w / 2;
+    pad_h = pad_h / 2;
+
+    pad.push_back(pad_w);
+    pad.push_back(pad_h);
+    pad.push_back(r);
+
+    int top = int(round(pad_h - 0.1));
+    int bottom = int(round(pad_h + 0.1));
+    int left = int(round(pad_w - 0.1));
+    int right = int(round(pad_w + 0.1));
+    cv::copyMakeBorder(resize_img, resize_img, top, bottom, left, right, 0, cv::Scalar(114, 114, 114));
+
+    return resize_img;
+}
+
 int RunMSLiteModel(OH_AI_ModelHandle model, float *imageData) {
     // 设置模型输入数据
     auto inputs = OH_AI_ModelGetInputs(model);

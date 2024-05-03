@@ -15,12 +15,12 @@
 
 import CameraModel from '../model/rknnseg/CameraModel';
 import Logger from '../utlis/Logger';
-import util from '@ohos.util';
-import emitter from "@ohos.events.emitter";
 import rknnSocket from '../model/rknnsocket/rknnSokcet';
 import socket from '@ohos.net.socket';
+import TopBar from '../component/TopBar';
+import ReturnBtn from '../component/ReturnBtn';
 
-const TAG: string = '[FSR-AI-RKNN]';
+const TAG: string = '[FSR-AI-PPSEG]';
 
 @Entry
 @Component
@@ -34,7 +34,6 @@ struct CameraPage {
   public socket: rknnSocket = new rknnSocket("127.0.0.1", 12600);
 
   aboutToAppear() {
-    // 收到eventId为1的事件后执行该回调
     this.onRknnMsg();
   }
 
@@ -53,20 +52,14 @@ struct CameraPage {
     });
   }
 
-  onPageHide() {
-
-  }
-
-  onPageShow() {
-
-  }
-
   build() {
     Column() {
+      TopBar({ text: '目标分割', media: $r('app.media.obj_detection_icon') })
+        .layoutWeight(1)
+        .height('120px')
       Row() {
         Stack() {
           Image(this.base64)
-
             .zIndex(2)
             .opacity(0.5)
             .objectFit(ImageFit.Cover)
@@ -80,7 +73,7 @@ struct CameraPage {
               this.mXComponentController.setXComponentSurfaceSize({ surfaceWidth: 1080, surfaceHeight: 1920 });
               this.surfaceId = this.mXComponentController.getXComponentSurfaceId();
               Logger.info(TAG, `onLoad surfaceId: ${this.surfaceId}`);
-              this.cameraModel.initCamera(this.surfaceId, this.modelId,this.socket);
+              this.cameraModel.initCamera(this.surfaceId, this.modelId, this.socket);
               this.cameraModel.onImageArrival((value: number, fps: number) => {
               })
             })
@@ -100,7 +93,7 @@ struct CameraPage {
           Text(this.fps.toString() + " img/s")
             .fontSize(48)
             .textAlign(TextAlign.Center)
-
+          ReturnBtn()
         }
         .width("640px")
         .align(Alignment.Top)
@@ -111,19 +104,6 @@ struct CameraPage {
     .backgroundColor('#00fcfafa')
     .width('100%')
     .height('100%')
-  }
-
-  uint8ArrayToString(uint8Array: Uint8Array): string {
-    let textDecoder = util.TextDecoder.create('utf-8');
-    return textDecoder.decodeWithStream(uint8Array);
-  }
-
-  uint8ArrayToStringTest(u8a: Uint8Array) {
-    let dataStr = "";
-    for (let i = 0; i < u8a.length; i++) {
-      dataStr += String.fromCharCode(u8a[i])
-    }
-    return dataStr;
   }
 
   async aboutToDisappear() {

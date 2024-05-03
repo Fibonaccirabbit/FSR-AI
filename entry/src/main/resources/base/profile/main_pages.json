@@ -1,9 +1,14 @@
 {
   "src": [
     "pages/Index",
-    "pages/Classification",
+    "pages/MsMobilenetV2",
     "pages/ObjectDetect",
     "pages/RknnYolo",
-    "pages/RknnSeg"
+    "pages/RknnSeg",
+    "pages/RknnRetinaFace",
+    "pages/RknnHandpose",
+    "pages/Home",
+    "pages/MsDepthAnything",
+    "pages/MsFPR"
   ]
 }

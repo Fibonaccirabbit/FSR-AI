@@ -19,9 +19,61 @@
 OH_AI_ModelHandle modelms = nullptr;
 sem_t mutex;
 
+std::string base64_encode(const unsigned char *input, int length) {
+    std::string base64_start = "data:image/png;base64,";
+    static const std::string base64_chars =
+        "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
 
+    std::string output;
+    int i = 0;
+    int j = 0;
+    unsigned char char_array_3[3];
+    unsigned char char_array_4[4];
 
-void RunFPRModel(OH_AI_ModelHandle model, float *&imageData , float *& output) {
+    while (length--) {
+        char_array_3[i++] = *(input++);
+        if (i == 3) {
+            char_array_4[0] = (char_array_3[0] & 0xfc) >> 2;
+            char_array_4[1] =
+                ((char_array_3[0] & 0x03) << 4) + ((char_array_3[1] & 0xf0) >> 4);
+            char_array_4[2] =
+                ((char_array_3[1] & 0x0f) << 2) + ((char_array_3[2] & 0xc0) >> 6);
+            char_array_4[3] = char_array_3[2] & 0x3f;
+
+            for (i = 0; i < 4; i++)
+                output += base64_chars[char_array_4[i]];
+            i = 0;
+        }
+    }
+
+    if (i) {
+        for (j = i; j < 3; j++)
+            char_array_3[j] = '\0';
+
+        char_array_4[0] = (char_array_3[0] & 0xfc) >> 2;
+        char_array_4[1] =
+            ((char_array_3[0] & 0x03) << 4) + ((char_array_3[1] & 0xf0) >> 4);
+        char_array_4[2] =
+            ((char_array_3[1] & 0x0f) << 2) + ((char_array_3[2] & 0xc0) >> 6);
+
+        for (j = 0; j < i + 1; j++)
+            output += base64_chars[char_array_4[j]];
+
+        while ((i++ < 3))
+            output += '=';
+    }
+
+    return base64_start + output;
+}
+
+std::string matToBase64(cv::Mat &mat) {
+    std::vector<uchar> buf;
+    cv::imencode(".png", mat, buf);
+
+    return base64_encode(buf.data(), buf.size());
+}
+
+std::string RunFPRModel(OH_AI_ModelHandle model, float *&imageData) {
     // 设置模型输入数据
     auto inputs = OH_AI_ModelGetInputs(model);
     LOGI("Get model inputs:\n");
@@ -51,29 +103,37 @@ void RunFPRModel(OH_AI_ModelHandle model, float *&imageData , float *& output) {
     if (predict_ret != OH_AI_STATUS_SUCCESS) {
         OH_AI_ModelDestroy(&model);
         LOGE("Predict MSLite model error.\n");
+        return "error";
     }
     LOGI("Run MSLite model success.\n");
 
     LOGI("Get model outputs:\n");
-    int ret = 0;
+    for (size_t i = 0; i < outputs.handle_num; i++) {
+        auto tensor = outputs.handle_list[i];
+        LOGI("- TensorOutput %{public}d name is: %{public}s.\n", static_cast<int>(i), OH_AI_TensorGetName(tensor));
+        LOGI("- TensorOutput %{public}d size is: %{public}d.\n", static_cast<int>(i), (int)OH_AI_TensorGetDataSize(tensor));
+        auto out_data = reinterpret_cast<const float *>(OH_AI_TensorGetData(tensor));
+
+        std::cout << "Output data is:";
+        for (int i = 0; (i < OH_AI_TensorGetElementNum(tensor)) && (i <= 10); i++) {
+            std::cout << out_data[i] << " ";
+            LOGI("- TensorOutput %{public}d name is: %{public}f.\n", static_cast<int>(i), out_data[i]);
+        }
+
+        std::cout << std::endl;
+    }
     auto tensor = outputs.handle_list[0];
     auto out_data = reinterpret_cast<const float *>(OH_AI_TensorGetData(tensor));
-    float *input = new float[224*224*3];
-    memcpy(input, out_data, 224*224*3*sizeof(float));
-    cv::Mat image(224, 224, CV_32FC(3), input);
-    LOGI("output colormap:%{public}d",image.rows*image.cols*image.elemSize());
-    cv::Mat rgbaImage;
-    cv::cvtColor(image, rgbaImage, cv::COLOR_RGB2RGBA);
-//    std::vector<cv::Mait> channels;
-//    cv::split(image,channels);
-//    cv::Mat colorImage;
-//    cv::applyColorMap(channels[0], colorImage , cv::COLORMAP_JET);
-  
-    memcpy(output,rgbaImage.data,224*224*4*sizeof(float));
-
+    cv::Mat gray_image;
+    gray_image = cv::Mat(224, 224, CV_32F, const_cast<float *>(out_data)).clone();
+    cv::normalize(gray_image, gray_image, 0, 1, cv::NORM_MINMAX);
+    cv::Mat uint8Image;
+    gray_image.convertTo(uint8Image, CV_8U, 255.0);
+    cv::Mat color_image;
+    cv::applyColorMap(uint8Image, color_image, cv::COLORMAP_INFERNO);
+    std::string result_str = matToBase64(color_image);
+    return result_str;
 }
-
-
 
 static napi_value modelInit(napi_env env, napi_callback_info info) {
     // int32_t ret;
@@ -137,27 +197,33 @@ static napi_value modelInference(napi_env env, napi_callback_info info) {
     size_t byteLength = 0;
     void *d = nullptr;
     napi_get_arraybuffer_info(env, argv[0], &d, &byteLength);
-    float *inputData = static_cast<float *>(d);
-    LOGI("长度：%{public}zu", byteLength);
-    nn::transform::Resizer resizer(374,500, 224, 224);
-    resizer.resize(inputData);
-    nn::Config::MobilenetV2Config mConfig(false, true, true);
-    nn::PreProcessor PP(224, 224, mConfig);
-    PP.RGBA = true;
-    PP.Norm = true;
-    PP.HWC = false;
-    // 进行前处理
-    PP.call(inputData);
-    float * output = new float[224*224*4];
-    RunFPRModel(modelms, inputData,output);
+    // YUV转RGB
+    cv::Mat rgbImage;
+    cv::Mat yuv(480 * 3 / 2, 640, CV_8UC1);
+    yuv.data = (unsigned char *)(d);
+    cv::cvtColor(yuv, rgbImage, cv::COLOR_YUV420sp2RGB);
+
+    // Resize
+    cv::Size targetSize(224, 224);
+    cv::resize(rgbImage, rgbImage, targetSize);
+    rgbImage.convertTo(rgbImage, CV_32FC3);
+
+    // Norm to (0,1)
+    cv::normalize(rgbImage, rgbImage, 0, 1.0, cv::NORM_MINMAX);
+
+    // copy Mat.data
+    float *inputData = new float[224 * 224 * 3];
+    std::memcpy(inputData, rgbImage.data, 224 * 224 * 3 * sizeof(float));
+
+    std::string res = RunFPRModel(modelms, inputData);
     napi_value result;
-    void * outdata = (void *)output;
-    napi_create_arraybuffer(env,224*224*4*sizeof(float),&outdata,&result);
+    const char *constc = nullptr; // 初始化const char*类型，并赋值为空
+    constc = res.c_str();         // string类型转const char*类型
+    napi_create_string_utf8(env, constc, res.size(), &result);
 
     LOGI("Exit runDemo()");
     return result;
 }
-
 
 EXTERN_C_START
 static napi_value Init(napi_env env, napi_value exports) {

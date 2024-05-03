@@ -18,8 +18,10 @@ import Logger from '../utlis/Logger';
 import util from '@ohos.util';
 import emitter from "@ohos.events.emitter";
 import display from '@ohos.display';
+import TopBar from '../component/TopBar';
+import ReturnBtn from '../component/ReturnBtn';
 
-const TAG: string = '[FSR-AI-RKNN]';
+const TAG: string = '[FSR-AI-YOLO]';
 
 interface ObjectDesc {
   xmin?: number;
@@ -51,8 +53,6 @@ struct CameraPage {
   @State fps: number = 0;
   private scale_factor_x = 2;
   private scale_factor_y = 2;
-  private camera_show_width = 1280;
-  private camera_show_height = 1080;
 
   aboutToAppear() {
     // 收到eventId为1的事件后执行该回调
@@ -72,17 +72,11 @@ struct CameraPage {
       console.error('Failed to obtain the default display object. Code: ' + JSON.stringify(exception));
     }
   }
-
-  onPageHide() {
-
-  }
-
-  onPageShow() {
-
-  }
-
   build() {
     Column() {
+      TopBar({ text: '目标检测', media: $r('app.media.obj_detection_icon') })
+        .layoutWeight(1)
+        .height('120px')
       Row() {
         Stack() {
           ForEach(this.pointData, (item: ObjectDesc, index) => {
@@ -122,7 +116,7 @@ struct CameraPage {
         .height("960px")
 
         Column({ space: 20 }) {
-          Text("rknn Yolov5")
+          Text("Yolov5")
             .fontSize(42)
             .textAlign(TextAlign.Center)
             .backgroundColor('#F1F3F5')
@@ -131,7 +125,7 @@ struct CameraPage {
           Text(this.fps.toString() + " img/s")
             .fontSize(48)
             .textAlign(TextAlign.Center)
-
+          ReturnBtn()
         }
         .width("640px")
         .align(Alignment.Top)
