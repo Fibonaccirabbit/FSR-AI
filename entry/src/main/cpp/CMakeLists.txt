@@ -165,7 +165,8 @@ set_target_properties(libtegra_hal
         ${NATIVE_ROOT_PATH}/third_party/opencv/${OHOS_ARCH}/opencv4/3rdparty/libtegra_hal.a)
 
 
-
+# OpenCV SHARED
+set(OPENCV_LIB_PATH ${NATIVE_ROOT_PATH}/../../../libs/${OHOS_ARCH})
 
 ## libnnrt
 add_library( libnnrt SHARED IMPORTED )
@@ -203,6 +204,21 @@ foreach(EXE ${FSRMODELZOO})
     target_link_libraries(${EXE} PUBLIC uv)
     target_link_libraries(${EXE} PUBLIC mindspore_lite_ndk)
     target_link_libraries(${EXE} PUBLIC rawfile.z libace_napi.z.so )
+    target_link_libraries(${EXE} PUBLIC    ${OPENCV_LIB_PATH}/libopencv_core.so
+                                            opencv_imgcodecs
+                                            opencv_imgproc
+                                            opencv_photo
+                                            opencv_videoio
+                                            opencv_flann
+                                            opencv_features2d
+                                            opencv_calib3d
+                                            opencv_video
+                                            opencv_highgui
+                                            opencv_ml
+                                            opencv_stitching
+                                            opencv_dnn
+                                            opencv_objdetect
+                                            opencv_gapi  )
 
 endforeach()
 

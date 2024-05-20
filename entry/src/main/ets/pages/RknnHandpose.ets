@@ -1,17 +1,4 @@
-/*
- * Copyright 2023 Unionman Technology Co., Ltd.
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
+
 
 import CameraModel from '../model/rknnhandpose/CameraModel';
 import Logger from '../utlis/Logger';
@@ -19,6 +6,7 @@ import util from '@ohos.util';
 import rknnSocket from '../model/rknnsocket/rknnSokcet';
 import socket from '@ohos.net.socket';
 import TopBar from '../component/TopBar';
+import ReturnBtn from '../component/ReturnBtn';
 
 const TAG: string = '[FSR-AI-RKNN]';
 
@@ -54,6 +42,7 @@ struct CameraPage {
   }
 
   onRknnMsg() {
+    this.socket.rknnServerPort = 12900;
     this.socket.bindLocal();
     this.socket.tcpServer.on('message', (value: SocketInfo) => {
       Logger.info(TAG, "on message");
@@ -90,7 +79,7 @@ struct CameraPage {
 
   build() {
     Column(){
-      TopBar({ text: '关键点检测', media: $r('app.media.obj_detection_icon') })
+      TopBar({ text: '关键点检测', media: $r('app.media.hand_pose') })
         .layoutWeight(1)
         .height('120px')
       Stack() {
@@ -135,7 +124,7 @@ struct CameraPage {
           .height("960px")
 
           Column({ space: 20 }) {
-            Text("rknn hand")
+            Text("handpose")
               .fontSize(42)
               .textAlign(TextAlign.Center)
               .backgroundColor('#F1F3F5')
@@ -144,7 +133,7 @@ struct CameraPage {
             Text(this.fps.toString() + " img/s")
               .fontSize(48)
               .textAlign(TextAlign.Center)
-
+            ReturnBtn()
           }
           .width("640px")
           .align(Alignment.Top)

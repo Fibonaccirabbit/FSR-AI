@@ -9,6 +9,7 @@
     "pages/RknnHandpose",
     "pages/Home",
     "pages/MsDepthAnything",
-    "pages/MsFPR"
+    "pages/MsFPR",
+    "pages/RknnTextDec"
   ]
 }

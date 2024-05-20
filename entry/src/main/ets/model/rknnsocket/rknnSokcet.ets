@@ -27,8 +27,8 @@ export default class rknnSocket {
   private ipAddress: socket.NetAddress;
   private address = "192.168.50.59";
   private port = 12700;
-  private rknnServerIP = "192.168.50.59"
-  private rknnServerPort = 12600;
+  public rknnServerIP = "127.0.0.1"
+  public rknnServerPort = 12700;
   private preTime = 0;
   private curTime = 0;
   private fps;

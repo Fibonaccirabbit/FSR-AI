@@ -6,6 +6,7 @@
 
 #include "mindsporeLite.h"
 #include "nn.h"
+#include "opencv2/imgproc/types_c.h"
 #include "third_party/rknn/3rdparty/opencv/opencv-linux-aarch64/include/opencv2/imgproc.hpp"
 #include "third_party/rknn/3rdparty/opencv/opencv-linux-armhf/include/opencv2/imgproc.hpp"
 #include <semaphore.h>
@@ -124,13 +125,16 @@ std::string RunFPRModel(OH_AI_ModelHandle model, float *&imageData) {
     }
     auto tensor = outputs.handle_list[0];
     auto out_data = reinterpret_cast<const float *>(OH_AI_TensorGetData(tensor));
-    cv::Mat gray_image;
-    gray_image = cv::Mat(224, 224, CV_32F, const_cast<float *>(out_data)).clone();
-    cv::normalize(gray_image, gray_image, 0, 1, cv::NORM_MINMAX);
+    cv::Mat hsi;
+    hsi = cv::Mat(224, 224, CV_32FC(31), const_cast<float *>(out_data)).clone();
+   
+    std::vector<cv::Mat> img_channel(31);
+    cv::split(hsi, img_channel);
+    cv::normalize(hsi, hsi, 0, 1, cv::NORM_MINMAX);
     cv::Mat uint8Image;
-    gray_image.convertTo(uint8Image, CV_8U, 255.0);
+    img_channel[30].convertTo(uint8Image, CV_8U, 255.0);
     cv::Mat color_image;
-    cv::applyColorMap(uint8Image, color_image, cv::COLORMAP_INFERNO);
+    cv::applyColorMap(uint8Image, color_image, cv::COLORMAP_JET);
     std::string result_str = matToBase64(color_image);
     return result_str;
 }
@@ -210,7 +214,9 @@ static napi_value modelInference(napi_env env, napi_callback_info info) {
 
     // Norm to (0,1)
     cv::normalize(rgbImage, rgbImage, 0, 1.0, cv::NORM_MINMAX);
-
+    
+//    cv::findContours(rgbImage,CV_RETR_TREE,CV_CHAIN_APPROX_SIMPLE);
+    
     // copy Mat.data
     float *inputData = new float[224 * 224 * 3];
     std::memcpy(inputData, rgbImage.data, 224 * 224 * 3 * sizeof(float));

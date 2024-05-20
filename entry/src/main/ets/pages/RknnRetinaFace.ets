@@ -1,17 +1,4 @@
-/*
- * Copyright 2023 Unionman Technology Co., Ltd.
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
+
 
 import CameraModel from '../model/rknnface/CameraModel';
 import Logger from '../utlis/Logger';
@@ -61,6 +48,7 @@ struct CameraPage {
   }
 
   onRknnMsg() {
+    this.socket.rknnServerPort = 13000;
     this.socket.bindLocal();
     this.socket.tcpServer.on('message', (value: SocketInfo) => {
       Logger.info(TAG, "on message");
@@ -112,11 +100,6 @@ struct CameraPage {
               Text(String(item.prop).substring(0, 4) + '%')
                 .fontSize(12)
                 .fontColor(this.colorSet[index % 4])
-              Blank()
-                .backgroundColor("#ffcd2e2e")
-                .width("10px")
-                .height("10px")
-                .position({ x: px2vp(1280 - item.px1 * this.scale_factor_x), y: px2vp(item.py1 * this.scale_factor_y) })
             }
             .position({ x: px2vp(1280 - item.xmax * this.scale_factor_x), y: px2vp(item.ymin * this.scale_factor_y) })
             .width(px2vp((item.xmax - item.xmin) * this.scale_factor_x))

@@ -1,31 +1,15 @@
-/*
- * Copyright 2023 Unionman Technology Co., Ltd.
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
+
 
 import camera from '@ohos.multimedia.camera';
 import image from '@ohos.multimedia.image';
-import mediaLibrary from '@ohos.multimedia.mediaLibrary';
 import Logger from '../../utlis/Logger';
 import { BusinessError, Callback } from '@ohos.base';
-import mobilenetV2 from 'libmobilenetV2.so';
 import emitter from "@ohos.events.emitter";
-import performanceMonitor from '@ohos.arkui.performanceMonitor';
 import rknnSocket from '../rknnsocket/rknnSokcet';
 import common from '@ohos.app.ability.common';
 import fs from '@ohos.file.fs';
 
-import fileio from '@ohos.fileio';
+
 import systemDateTime from '@ohos.systemDateTime';
 // 定义一个eventId为1的事件，事件优先级为Low
 let event: emitter.InnerEvent = {

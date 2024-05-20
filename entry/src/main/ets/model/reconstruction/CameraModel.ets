@@ -1,17 +1,4 @@
-/*
- * Copyright 2023 Unionman Technology Co., Ltd.
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
+
 
 import camera from '@ohos.multimedia.camera';
 import image from '@ohos.multimedia.image';
@@ -146,13 +133,9 @@ export default class CameraService {
             height: 480,
             dataSize: buffer.byteLength
           }
-          // let inputBuffer = await this.test(buffer);
-          // let f32 = new Float32Array(640 * 480 * 4);
-          // f32.set(new Float32Array(new Uint8Array(buffer)))
-          // console.info(TAG + f32[f32.length-1] + " " + buffer.byteLength.toString())
           // 如果每张img都处理，app会卡并且画框有滞后性能为13帧；每2张img推理1张会流畅很多，性能可达到12帧
           // 利用napi异步工作队列，最多有4个线程并行
-          if ((number % 30) == 0) {
+          if ((number % 20) == 0) {
             // @ts-ignore
             Logger.info(TAG, `================Process pic number = ${number}`);
             const startTime = new Date().getTime();
