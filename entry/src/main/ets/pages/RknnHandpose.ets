@@ -7,6 +7,7 @@ import rknnSocket from '../model/rknnsocket/rknnSokcet';
 import socket from '@ohos.net.socket';
 import TopBar from '../component/TopBar';
 import ReturnBtn from '../component/ReturnBtn';
+import display from '@ohos.display';
 
 const TAG: string = '[FSR-AI-RKNN]';
 
@@ -30,8 +31,12 @@ struct CameraPage {
   @State indexSet: number[] = [1, 2, 3];
   @State modelId: number = 0;
   @State fps: number = 0;
-  private scale_factor_x = 5;
-  private scale_factor_y = 3.75;
+  @State swidth: string = "400px"
+  @State sheight: string = "240px"
+  private w :number =400;
+  private h :number =240;
+  private scale_factor_x = 0.875;
+  private scale_factor_y = 0.875;
   @State mouse_x : number = 0;
   @State mouse_y : number  = 0;
   private pre_local = {x:0,y:0};
@@ -39,6 +44,19 @@ struct CameraPage {
 
   aboutToAppear() {
     this.onRknnMsg();
+    let displayClass: display.Display | null = null;
+    try {
+      displayClass = display.getDefaultDisplaySync();
+      this.w = parseInt(displayClass.width.toString()) * 0.7;
+      this.h = parseInt(displayClass.height.toString())  ;
+      this.swidth = this.w.toString() + "px"
+      this.sheight = this.h.toString() + "px"
+      this.scale_factor_x = Math.round((this.w / 256) * 100) /100;
+      this.scale_factor_y = Math.round((this.h / 256) * 100) /100;
+      Logger.info(TAG, displayClass.width.toString() + " " + displayClass.height.toString());
+    } catch (exception) {
+      console.error('Failed to obtain the default display object. Code: ' + JSON.stringify(exception));
+    }
   }
 
   onRknnMsg() {
@@ -81,15 +99,8 @@ struct CameraPage {
     Column(){
       TopBar({ text: '关键点检测', media: $r('app.media.hand_pose') })
         .layoutWeight(1)
-        .height('120px')
+        .height('30%')
       Stack() {
-        Text()
-          .backgroundColor("#fffd4949")
-          .width(10)
-          .height(10)
-          .borderRadius(5)
-          .position({ x: px2vp(1920 - this.mouse_x), y: px2vp(this.mouse_y) })
-          .zIndex(9)
         Row() {
           Stack() {
             ForEach(this.pointData, (item: point, index) => {
@@ -100,7 +111,7 @@ struct CameraPage {
                   .height(10)
                   .borderRadius(5)
               }
-              .position({ x: px2vp(1280 - item.x*this.scale_factor_x), y: px2vp(item.y*this.scale_factor_y) })
+              .position({ x: px2vp(this.w - item.x*this.scale_factor_x), y: px2vp(item.y*this.scale_factor_y) })
               .zIndex(index + 1)
             })
             XComponent({
@@ -119,9 +130,8 @@ struct CameraPage {
               })
           }
           .backgroundColor("#ffc63333")
-          .alignSelf(ItemAlign.Start)
-          .width("1280px")
-          .height("960px")
+          .width(this.swidth)
+          .height(this.sheight)
 
           Column({ space: 20 }) {
             Text("handpose")
@@ -130,15 +140,13 @@ struct CameraPage {
               .backgroundColor('#F1F3F5')
               .width("70%")
               .height("22%")
-            Text(this.fps.toString() + " img/s")
-              .fontSize(48)
-              .textAlign(TextAlign.Center)
             ReturnBtn()
           }
-          .width("640px")
+          .width("30%")
           .align(Alignment.Top)
         }
       }
+      .height("70%")
     }
     .backgroundColor('#00fcfafa')
     .width('100%')

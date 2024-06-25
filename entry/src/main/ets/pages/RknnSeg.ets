@@ -6,6 +6,7 @@ import rknnSocket from '../model/rknnsocket/rknnSokcet';
 import socket from '@ohos.net.socket';
 import TopBar from '../component/TopBar';
 import ReturnBtn from '../component/ReturnBtn';
+import display from '@ohos.display';
 
 const TAG: string = '[FSR-AI-PPSEG]';
 
@@ -19,9 +20,27 @@ struct CameraPage {
   @State fps: number = 0;
   @State base64: string = "";
   public socket: rknnSocket = new rknnSocket("127.0.0.1", 12600);
-
+  @State swidth: string = "400px"
+  @State sheight: string = "240px"
+  private w :number =400;
+  private h :number =240;
+  private scale_factor_x = 0.875;
+  private scale_factor_y = 0.875;
   aboutToAppear() {
     this.onRknnMsg();
+    let displayClass: display.Display | null = null;
+    try {
+      displayClass = display.getDefaultDisplaySync();
+      this.w = parseInt(displayClass.width.toString()) * 0.7;
+      this.h = parseInt(displayClass.height.toString())  ;
+      this.swidth = this.w.toString() + "px"
+      this.sheight = this.h.toString() + "px"
+      this.scale_factor_x = Math.round((this.w / 640) * 100) /100;
+      this.scale_factor_y = this.scale_factor_x;
+      Logger.info(TAG, displayClass.width.toString() + " " + displayClass.height.toString());
+    } catch (exception) {
+      console.error('Failed to obtain the default display object. Code: ' + JSON.stringify(exception));
+    }
   }
 
   onRknnMsg() {
@@ -44,7 +63,7 @@ struct CameraPage {
     Column() {
       TopBar({ text: '目标分割', media: $r('app.media.obj_detection_icon') })
         .layoutWeight(1)
-        .height('120px')
+        .height('30%')
       Row() {
         Stack() {
           Image(this.base64)
@@ -67,9 +86,8 @@ struct CameraPage {
             })
         }
         .backgroundColor("#ffc63333")
-        .alignSelf(ItemAlign.Start)
-        .width("1280px")
-        .height("960px")
+        .width(this.swidth)
+        .height(this.sheight)
 
         Column({ space: 20 }) {
           Text("PPSEG")
@@ -78,17 +96,14 @@ struct CameraPage {
             .backgroundColor('#F1F3F5')
             .width("70%")
             .height("22%")
-          Text(this.fps.toString() + " img/s")
-            .fontSize(48)
-            .textAlign(TextAlign.Center)
           ReturnBtn()
         }
-        .width("640px")
+        .width("30%")
         .align(Alignment.Top)
 
       }
+      .height("70%")
     }
-    .justifyContent(FlexAlign.Center)
     .backgroundColor('#00fcfafa')
     .width('100%')
     .height('100%')

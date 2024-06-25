@@ -19,13 +19,13 @@ struct Home {
   myArr: functionButton[] = [
     new functionButton('目标检测', $r('app.media.obj_detection_icon'),"pages/RknnYolo"),
     new functionButton('图像分类', $r('app.media.image_classification_icon'),"pages/MsMobilenetV2"),
-    new functionButton('图像分割', $r('app.media.image_segmentation_icon'),"pages/RknnSeg"),
-    new functionButton('人脸识别', $r('app.media.face_icon'),"pages/RknnRetinaFace"),
-    new functionButton('文本检测', $r('app.media.text_detection_icon'),"pages/RknnTextDec"),
-    new functionButton('手势识别', $r('app.media.hand_pose'),"pages/RknnHandpose"),
-    new functionButton('测试页面', $r('app.media.text_detection_icon'),"pages/Index"),
+    // new functionButton('图像分割', $r('app.media.image_segmentation_icon'),"pages/RknnSeg"),
+    // new functionButton('人脸识别', $r('app.media.face_icon'),"pages/RknnRetinaFace"),
+    // new functionButton('文本检测', $r('app.media.text_detection_icon'),"pages/RknnTextDec"),
+    new functionButton('手部检测', $r('app.media.hand_pose'),"pages/RknnHandpose"),
+    // new functionButton('测试页面', $r('app.media.text_detection_icon'),"pages/Index"),
     new functionButton('深度估計', $r('app.media.depth'),"pages/MsDepthAnything"),
-    new functionButton('HSI重建', $r('app.media.hsi'),"pages/MsFPR"),
+    // new functionButton('HSI重建', $r('app.media.hsi'),"pages/MsFPR"),
   ]
   async aboutToAppear() {
     let AtManager = abilityAccessCtrl.createAtManager();

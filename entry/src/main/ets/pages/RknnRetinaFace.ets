@@ -38,13 +38,30 @@ struct CameraPage {
   @State indexSet: number[] = [1, 2, 3];
   @State modelId: number = 0;
   @State fps: number = 0;
-  private scale_factor_x = 2;
-  private scale_factor_y = 2;
+  @State swidth: string = "400px"
+  @State sheight: string = "240px"
+  private w :number =400;
+  private h :number =240;
+  private scale_factor_x = 0.875;
+  private scale_factor_y = 0.875;
   public socket: rknnSocket = new rknnSocket("127.0.0.1", 12600);
 
   aboutToAppear() {
     // 收到eventId为1的事件后执行该回调
     this.onRknnMsg();
+    let displayClass: display.Display | null = null;
+    try {
+      displayClass = display.getDefaultDisplaySync();
+      this.w = parseInt(displayClass.width.toString()) * 0.7;
+      this.h = parseInt(displayClass.height.toString())  ;
+      this.swidth = this.w.toString() + "px"
+      this.sheight = this.h.toString() + "px"
+      this.scale_factor_x = Math.round((this.w / 640) * 100) /100;
+      this.scale_factor_y = this.scale_factor_x;
+      Logger.info(TAG, displayClass.width.toString() + " " + displayClass.height.toString());
+    } catch (exception) {
+      console.error('Failed to obtain the default display object. Code: ' + JSON.stringify(exception));
+    }
   }
 
   onRknnMsg() {
@@ -87,10 +104,10 @@ struct CameraPage {
 
   build() {
     Column() {
+      TopBar({ text: '人脸识别', media: $r('app.media.face_icon') })
+        .layoutWeight(1)
+        .height('30%')
       Row() {
-        TopBar({ text: '人脸识别', media: $r('app.media.face_icon') })
-          .layoutWeight(1)
-          .height('120px')
         Stack() {
           ForEach(this.pointData, (item: ObjectDesc, index) => {
             Column() {
@@ -101,7 +118,7 @@ struct CameraPage {
                 .fontSize(12)
                 .fontColor(this.colorSet[index % 4])
             }
-            .position({ x: px2vp(1280 - item.xmax * this.scale_factor_x), y: px2vp(item.ymin * this.scale_factor_y) })
+            .position({ x: px2vp(this.w - item.xmax * this.scale_factor_x), y: px2vp(item.ymin * this.scale_factor_y) })
             .width(px2vp((item.xmax - item.xmin) * this.scale_factor_x))
             .height(px2vp((item.ymax - item.ymin) * this.scale_factor_y))
             .borderWidth(2)
@@ -124,28 +141,24 @@ struct CameraPage {
             })
         }
         .backgroundColor("#ffc63333")
-        .alignSelf(ItemAlign.Start)
-        .width("1280px")
-        .height("960px")
+        .width(this.swidth)
+        .height(this.sheight)
 
         Column({ space: 20 }) {
           Text("RetinaFace")
-            .fontSize(42)
+            .fontSize(32)
             .textAlign(TextAlign.Center)
             .backgroundColor('#F1F3F5')
             .width("70%")
             .height("22%")
-          Text(this.fps.toString() + " img/s")
-            .fontSize(48)
-            .textAlign(TextAlign.Center)
           ReturnBtn()
         }
-        .width("640px")
+        .width("30%")
         .align(Alignment.Top)
 
       }
+      .height("70%")
     }
-    .justifyContent(FlexAlign.Center)
     .backgroundColor('#00fcfafa')
     .width('100%')
     .height('100%')
