@@ -133,10 +133,16 @@ std::string RunFPRModel(OH_AI_ModelHandle model, float *&imageData) {
     cv::normalize(hsi, hsi, 0, 1, cv::NORM_MINMAX);
     cv::Mat uint8Image;
     img_channel[30].convertTo(uint8Image, CV_8U, 255.0);
-    cv::Mat color_image;
-    cv::applyColorMap(uint8Image, color_image, cv::COLORMAP_JET);
-    std::string result_str = matToBase64(color_image);
-    return result_str;
+    cv::Mat band_700;
+    cv::applyColorMap(uint8Image, band_700, cv::COLORMAP_JET);
+    std::string band_700_res = matToBase64(band_700);
+    
+    img_channel[0].convertTo(uint8Image, CV_8U, 255.0);
+    cv::Mat band_400;
+    cv::applyColorMap(uint8Image, band_400, cv::COLORMAP_JET);
+    std::string band_400_res = matToBase64(band_400);
+    std::string res = band_400_res + "@" + band_700_res;
+    return res;
 }
 
 static napi_value modelInit(napi_env env, napi_callback_info info) {
@@ -226,7 +232,7 @@ static napi_value modelInference(napi_env env, napi_callback_info info) {
     const char *constc = nullptr; // 初始化const char*类型，并赋值为空
     constc = res.c_str();         // string类型转const char*类型
     napi_create_string_utf8(env, constc, res.size(), &result);
-
+    
     LOGI("Exit runDemo()");
     return result;
 }

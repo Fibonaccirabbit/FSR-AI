@@ -8,6 +8,7 @@ import Logger from '../utlis/Logger';
 import image from '@ohos.multimedia.image';
 import router from '@ohos.router';
 import rknnSocket from '../model/rknnsocket/rknnSokcet';
+import rknnbenchmark from "librknnbenchmark.so"
 import  { flowerBase64, someBase64 } from '../utlis/Base64Image';
 
 let TAG = "[FSR-AI]"
@@ -28,94 +29,101 @@ struct Index {
   build() {
     Row() {
       Column() {
-        Text("视频流RKNN-Hand")
+        // Text("视频流RKNN-Hand")
+        //   .fontSize(50)
+        //   .fontWeight(FontWeight.Bold)
+        //   .onClick(() => {
+        //     router.pushUrl({
+        //       url: 'pages/RknnHandpose' // 目标url
+        //     })
+        //   })
+        // Text("视频流RKNN-Face")
+        //   .fontSize(50)
+        //   .fontWeight(FontWeight.Bold)
+        //   .onClick(() => {
+        //     router.pushUrl({
+        //       url: 'pages/RknnRetinaFace' // 目标url
+        //     })
+        //   })
+        // Text("视频流RKNN-PPSeg")
+        //   .fontSize(50)
+        //   .fontWeight(FontWeight.Bold)
+        //   .onClick(() => {
+        //     router.pushUrl({
+        //       url: 'pages/RknnSeg' // 目标url
+        //     })
+        //   })
+        // Text("视频流RKNN-Yolov5")
+        //   .fontSize(50)
+        //   .fontWeight(FontWeight.Bold)
+        //   .onClick(() => {
+        //     router.pushUrl({
+        //       url: 'pages/RknnYolo' // 目标url
+        //     })
+        //   })
+        // Text("视频流mobilenetV2")
+        //   .fontSize(50)
+        //   .fontWeight(FontWeight.Bold)
+        //   .onClick(() => {
+        //     router.pushUrl({
+        //       url: 'pages/Classification' // 目标url
+        //     })
+        //   })
+        // Text("视频流ssd300")
+        //   .fontSize(50)
+        //   .fontWeight(FontWeight.Bold)
+        //   .onClick(() => {
+        //     router.pushUrl({
+        //       url: 'pages/ObjectDetect' // 目标url
+        //     })
+        //   })
+        Text("rknnbenchmark测试")
           .fontSize(50)
           .fontWeight(FontWeight.Bold)
           .onClick(() => {
-            router.pushUrl({
-              url: 'pages/RknnHandpose' // 目标url
-            })
+            this.base64 = rknnbenchmark.modelInit(getContext(this).resourceManager);
+            Logger.info(TAG, this.base64)
           })
-        Text("视频流RKNN-Face")
-          .fontSize(50)
-          .fontWeight(FontWeight.Bold)
-          .onClick(() => {
-            router.pushUrl({
-              url: 'pages/RknnRetinaFace' // 目标url
-            })
-          })
-        Text("视频流RKNN-PPSeg")
-          .fontSize(50)
-          .fontWeight(FontWeight.Bold)
-          .onClick(() => {
-            router.pushUrl({
-              url: 'pages/RknnSeg' // 目标url
-            })
-          })
-        Text("视频流RKNN-Yolov5")
-          .fontSize(50)
-          .fontWeight(FontWeight.Bold)
-          .onClick(() => {
-            router.pushUrl({
-              url: 'pages/RknnYolo' // 目标url
-            })
-          })
-        Text("视频流mobilenetV2")
-          .fontSize(50)
-          .fontWeight(FontWeight.Bold)
-          .onClick(() => {
-            router.pushUrl({
-              url: 'pages/Classification' // 目标url
-            })
-          })
-        Text("视频流ssd300")
-          .fontSize(50)
-          .fontWeight(FontWeight.Bold)
-          .onClick(() => {
-            router.pushUrl({
-              url: 'pages/ObjectDetect' // 目标url
-            })
-          })
-        Text("启动模型")
-          .fontSize(50)
-          .fontWeight(FontWeight.Bold)
-          .onClick(() => {
-            let res: number = depthanything.modelInit(getContext(this).resourceManager);
-            Logger.info(TAG, res.toString())
-          })
-        Text("推理模型")
-          .fontSize(50)
-          .fontWeight(FontWeight.Bold)
-          .onClick(() => {
-            this.inference();
-          })
-        Text("关闭模型")
-          .fontSize(50)
-          .fontWeight(FontWeight.Bold)
-          .onClick(() => {
-            let res: number = depthanything.modelDeInit();
-            Logger.info(TAG, res.toString())
-          })
-
-        Text("socket测试")
-          .fontSize(50)
-          .fontWeight(FontWeight.Bold)
-          .onClick(() => {
-            this.socket.prepare();
-          })
-        Text("socket发送")
-          .fontSize(50)
-          .fontWeight(FontWeight.Bold)
-          .onClick(() => {
-            this.sendImage();
-          })
-
-          Text("socket测试解析")
-            .fontSize(50)
-            .fontWeight(FontWeight.Bold)
-            .onClick(() => {
-              this.socket.resolveRknnYoloResult("bird&129&49&512&460@");
-            })
+        // Text("启动模型")
+        //   .fontSize(50)
+        //   .fontWeight(FontWeight.Bold)
+        //   .onClick(() => {
+        //     let res: number = depthanything.modelInit(getContext(this).resourceManager);
+        //     Logger.info(TAG, res.toString())
+        //   })
+        // Text("推理模型")
+        //   .fontSize(50)
+        //   .fontWeight(FontWeight.Bold)
+        //   .onClick(() => {
+        //     this.inference();
+        //   })
+        // Text("关闭模型")
+        //   .fontSize(50)
+        //   .fontWeight(FontWeight.Bold)
+        //   .onClick(() => {
+        //     let res: number = depthanything.modelDeInit();
+        //     Logger.info(TAG, res.toString())
+        //   })
+        //
+        // Text("socket测试")
+        //   .fontSize(50)
+        //   .fontWeight(FontWeight.Bold)
+        //   .onClick(() => {
+        //     this.socket.prepare();
+        //   })
+        // Text("socket发送")
+        //   .fontSize(50)
+        //   .fontWeight(FontWeight.Bold)
+        //   .onClick(() => {
+        //     this.sendImage();
+        //   })
+        //
+        //   Text("socket测试解析")
+        //     .fontSize(50)
+        //     .fontWeight(FontWeight.Bold)
+        //     .onClick(() => {
+        //       this.socket.resolveRknnYoloResult("bird&129&49&512&460@");
+        //     })
 
 
       }

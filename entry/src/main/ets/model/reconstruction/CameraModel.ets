@@ -4,7 +4,7 @@ import camera from '@ohos.multimedia.camera';
 import image from '@ohos.multimedia.image';
 import Logger from '../../utlis/Logger';
 import { BusinessError, Callback } from '@ohos.base';
-import fpr from 'libfpr.so';
+import fpr2 from 'libfpr.so';
 
 
 interface CameraInfo {
@@ -135,12 +135,12 @@ export default class CameraService {
           }
           // 如果每张img都处理，app会卡并且画框有滞后性能为13帧；每2张img推理1张会流畅很多，性能可达到12帧
           // 利用napi异步工作队列，最多有4个线程并行
-          if ((number % 20) == 0) {
+          if ((number % 12) == 0) {
             // @ts-ignore
             Logger.info(TAG, `================Process pic number = ${number}`);
             const startTime = new Date().getTime();
             // console.info(TAG + f32.byteLength.toString())
-            let value = fpr.modelInference(buffer);
+            let value = fpr2.modelInference(buffer);
             const endTime = new Date().getTime();
             callback(value, Math.floor(1000 / (endTime - startTime)));
           }

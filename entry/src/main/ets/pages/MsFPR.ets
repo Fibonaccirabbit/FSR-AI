@@ -6,6 +6,7 @@ import Logger from '../utlis/Logger';
 import fpr from 'libfpr.so';
 import ReturnBtn from '../component/ReturnBtn';
 import TopBar from '../component/TopBar';
+import display from '@ohos.display';
 
 const TAG: string = '[FSR-AI-CLS]';
 @Entry
@@ -15,8 +16,13 @@ struct CameraPage {
   private surfaceId: string = '-1';
   private cameraModel: CameraModel = new CameraModel();
   @State modelId: number = 0;
-  @State base64: string = "";
+  @State band_700: string = "";
+  @State band_400: string = "";
   @State fps: number = 0;
+  @State swidth: string = "400px"
+  @State sheight: string = "240px"
+  private w :number =400;
+  private h :number =240;
 
   async aboutToAppear() {
     try {
@@ -24,6 +30,18 @@ struct CameraPage {
       Logger.info(TAG, `Permission success`);
     } catch (err) {
       Logger.info(TAG, `Permission fail!`);
+    }
+    let displayClass: display.Display | null = null;
+    try {
+      displayClass = display.getDefaultDisplaySync();
+      this.w = parseInt(displayClass.width.toString()) * 0.5;
+      this.h = parseInt(displayClass.height.toString())  ;
+      this.swidth = this.w.toString() + "px"
+      this.sheight = this.h.toString() + "px"
+
+      Logger.info(TAG, displayClass.width.toString() + " " + displayClass.height.toString());
+    } catch (exception) {
+      console.error('Failed to obtain the default display object. Code: ' + JSON.stringify(exception));
     }
   }
 
@@ -55,7 +73,7 @@ struct CameraPage {
     Column() {
       TopBar({ text: '高光譜重建', media: $r('app.media.image_classification_icon') })
         .layoutWeight(1)
-        .height('120px')
+        .height('30%')
       Row() {
         Column() {
           XComponent({
@@ -70,36 +88,36 @@ struct CameraPage {
               Logger.info(TAG, `onLoad surfaceId: ${this.surfaceId}`);
               this.cameraModel.initCamera(this.surfaceId, this.modelId);
               this.cameraModel.onImageArrival((base64: string, fps: number) => {
-                this.base64 = base64;
+                let images = base64.split("@")
+                this.band_700 = images[1];
+                this.band_400 = images[0]
                 this.fps = fps;
               })
             })
 
         }
-        .height("960px")
-        .width("60%")
+        .height(this.sheight)
+        .width(this.swidth)
 
         Column({ space: 20 }) {
-          Text("快速像素级回归重建网络")
-            .fontSize(24)
+          Text("RGB重构高光谱")
+            .fontSize(23)
             .textAlign(TextAlign.Center)
             .backgroundColor('#F1F3F5')
             .width("70%")
             .height("12%")
-          Text(this.fps.toString() + " img/s")
-            .fontSize(24)
-            .textAlign(TextAlign.Center)
-          Text("700nm")
-            .fontSize(24)
-            .textAlign(TextAlign.Center)
-          Image(this.base64)
-            .width("448px")
-            .height("448px")
+          Image(this.band_700)
+            .width("50%")
+            .height("40%")
+          Image(this.band_400)
+            .width("50%")
+            .height("40%")
           ReturnBtn()
         }
         .align(Alignment.Top)
-        .width("40%")
+        .width("30%")
       }
+      .height("70%")
     }
     .justifyContent(FlexAlign.Center)
     .backgroundColor('#00fcfafa')

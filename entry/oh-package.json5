@@ -5,7 +5,8 @@
     "@types/libssd300.so": "file:./src/main/cpp/types/libssd300",
     "@types/libfpr.so": "file:./src/main/cpp/types/libfpr",
     "@types/libeyetracking.so": "file:./src/main/cpp/types/libeyetracking",
-    "@types/libdepthanything.so":"file:./src/main/cpp/types/libdepthanything"
+    "@types/libdepthanything.so":"file:./src/main/cpp/types/libdepthanything",
+    "@types/librknnbenchmark.so": "file:./src/main/cpp/types/librknnbenchmark"
   },
   "author": "",
   "name": "entry",

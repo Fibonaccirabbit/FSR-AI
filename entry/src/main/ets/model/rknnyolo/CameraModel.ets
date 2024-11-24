@@ -140,6 +140,7 @@ export default class CameraService {
           let buffer: ArrayBuffer;
           if (imgComponent.byteBuffer as ArrayBuffer) {
             buffer = imgComponent.byteBuffer;
+            Logger.info(TAG, imgComponent.byteBuffer.byteLength.toString());
           } else {
             return;
           }
@@ -148,6 +149,7 @@ export default class CameraService {
           // 利用napi异步工作队列，最多有4个线程并行
           if ((number % 12) == 0) {
             // this.savePictureSand(buffer, nextImage);
+
             this.socket.sendImage(buffer);
             callback(1, 1);
           }

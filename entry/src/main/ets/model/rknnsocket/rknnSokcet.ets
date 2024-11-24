@@ -28,7 +28,7 @@ export default class rknnSocket {
   private address = "192.168.50.59";
   private port = 12700;
   public rknnServerIP = "127.0.0.1"
-  public rknnServerPort = 12700;
+  public rknnServerPort = 13000;
   private preTime = 0;
   private curTime = 0;
   private fps;

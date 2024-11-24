@@ -10,6 +10,7 @@
     "pages/Home",
     "pages/MsDepthAnything",
     "pages/MsFPR",
-    "pages/RknnTextDec"
+    "pages/RknnTextDec",
+    "pages/RknnYoloMulti"
   ]
 }

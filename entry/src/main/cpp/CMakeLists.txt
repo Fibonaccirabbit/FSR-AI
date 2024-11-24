@@ -8,7 +8,9 @@ set(NATIVE_ROOT_PATH ${CMAKE_CURRENT_SOURCE_DIR})
 
 include_directories(${NATIVE_ROOT_PATH}
                     ${NATIVE_ROOT_PATH}/include
-                    ${NATIVE_ROOT_PATH}/third_party/opencv/include/opencv4)
+                    ${NATIVE_ROOT_PATH}/third_party/opencv/include/opencv4
+                    ${NATIVE_ROOT_PATH}/third_party/rknn/runtime/Linux/librknn_api/include
+                    )
 
 add_library(depthanything SHARED
       src/depthanything.cpp
@@ -33,6 +35,12 @@ add_library(fpr SHARED
       src/utils/nn.cpp
     )
 
+
+add_library(rknnbenchmark SHARED
+     src/rknnbenchmark.cpp
+     src/utils/mindsporeLite.cpp
+     src/utils/nn.cpp
+)
 
 # opencv
 ## libopencv_core
@@ -164,19 +172,22 @@ set_target_properties(libtegra_hal
         PROPERTIES IMPORTED_LOCATION
         ${NATIVE_ROOT_PATH}/third_party/opencv/${OHOS_ARCH}/opencv4/3rdparty/libtegra_hal.a)
 
+## libvideo
+add_library( libvideo STATIC IMPORTED)
+set_target_properties(libvideo
+        PROPERTIES IMPORTED_LOCATION
+        PROPERTIES IMPORTED_LOCATION ${NATIVE_ROOT_PATH}/third_party/opencv/${OHOS_ARCH}/libopencv_video.a)
 
 # OpenCV SHARED
 set(OPENCV_LIB_PATH ${NATIVE_ROOT_PATH}/../../../libs/${OHOS_ARCH})
 
-## libnnrt
-add_library( libnnrt SHARED IMPORTED )
-set_target_properties(libnnrt
-        PROPERTIES IMPORTED_LOCATION
-        ${NATIVE_ROOT_PATH}/third_party/rknn/lib/librknnrt.so)
 
-set(FSRMODELZOO mobilenetV2 ssd300 fpr depthanything)
+
+
+set(FSRMODELZOO mobilenetV2 ssd300 fpr depthanything rknnbenchmark)
 foreach(EXE ${FSRMODELZOO})
-    target_link_libraries(${EXE} PUBLIC libopencv_core)
+
+    target_link_libraries(${EXE} PUBLIC libopencv_core )
     target_link_libraries(${EXE} PUBLIC libopencv_imgcodecs)
     target_link_libraries(${EXE} PUBLIC libopencv_imgproc)
     target_link_libraries(${EXE} PUBLIC libopencv_highgui)
@@ -186,6 +197,7 @@ foreach(EXE ${FSRMODELZOO})
     target_link_libraries(${EXE} PUBLIC libopencv_features2d)
     target_link_libraries(${EXE} PUBLIC libopencv_dnn)
     target_link_libraries(${EXE} PUBLIC libopencv_videoio)
+    target_link_libraries(${EXE} PUBLIC libvideo)
     target_link_libraries(${EXE} PUBLIC libade)
     target_link_libraries(${EXE} PUBLIC libittnotify)
     target_link_libraries(${EXE} PUBLIC liblibjpeg-turbo)
@@ -204,21 +216,7 @@ foreach(EXE ${FSRMODELZOO})
     target_link_libraries(${EXE} PUBLIC uv)
     target_link_libraries(${EXE} PUBLIC mindspore_lite_ndk)
     target_link_libraries(${EXE} PUBLIC rawfile.z libace_napi.z.so )
-    target_link_libraries(${EXE} PUBLIC    ${OPENCV_LIB_PATH}/libopencv_core.so
-                                            opencv_imgcodecs
-                                            opencv_imgproc
-                                            opencv_photo
-                                            opencv_videoio
-                                            opencv_flann
-                                            opencv_features2d
-                                            opencv_calib3d
-                                            opencv_video
-                                            opencv_highgui
-                                            opencv_ml
-                                            opencv_stitching
-                                            opencv_dnn
-                                            opencv_objdetect
-                                            opencv_gapi  )
+
 
 endforeach()
 

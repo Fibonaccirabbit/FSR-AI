@@ -5,7 +5,7 @@
 // please include "napi/native_api.h".
 
 #include "mindsporeLite.h"
-
+#include "rknn_api.h"
 #include "napi/native_api.h"
 #include "mindsporeLite.h"
 #include "nn.h"

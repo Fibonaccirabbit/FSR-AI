@@ -91,8 +91,8 @@ struct CameraPage {
     }
     Logger.info(TAG, JSON.stringify(rknnData));
     this.pointData = rknnData;
-    this.mouse_x = this.mouse_x + (this.pointData[8].x - this.pre_local.x) * 8;
-    this.mouse_y = this.mouse_y + (this.pointData[8].y - this.pre_local.y) * 6;
+    // this.mouse_x = this.mouse_x + (this.pointData[8].x - this.pre_local.x) * 8;
+    // this.mouse_y = this.mouse_y + (this.pointData[8].y - this.pre_local.y) * 6;
   }
 
   build() {
